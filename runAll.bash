@@ -1,0 +1,40 @@
+#!/bin/bash
+
+echo "--> Started to run CpFM data analysis.";
+
+echo "--> Compilation.";
+make clean; make -j2;
+
+echo "--> Convertation of the data.";
+#protons 2016
+#./convert_wf /home/gred/Downloads/cern_data/MD_2016_10_18/Detectors_old_format/CpFM/ filelist_wf.txt ./root_files/output1.root;
+#./convert_pr /home/gred/Downloads/cern_data/MD_2016_10_18/Detectors_old_format/CpFM/ filelist_pr.txt ./root_files/output4.root;
+#ions 2016
+#./convert_wf /media/gred/HDD_5_EXT4/Backups/MDs/MD_2016_11_23/Detectors_old_format/CpFM/ filelist_wf_ions.txt ./root_files/output1_ions.root;
+#./convert_pr /media/gred/HDD_5_EXT4/Backups/MDs/MD_2016_11_23/Detectors_old_format/CpFM/ filelist_pr_ions.txt ./root_files/output4_ions.root;
+
+echo "--> Visualisation of the data.";
+#./visWaveform ./root_files/output1.root 235437 2;
+#./visWaveform ./root_files/output1.root 244357 2;
+
+echo "--> Getting Waveform parameters"
+#protons 2016
+#./getParam ./root_files/output1.root ./root_files/output2.root;
+#ions 2016
+#./getParam ./root_files/output1_ions.root ./root_files/output2_ions.root;
+
+echo "--> Getting Motor LVDT position"
+#./get_position ./root_files/2016_10_18_sps_full.root 1476741600000000 ./root_files/output2.root position_wf.root;
+#./get_position ./root_files/2016_10_18_nobctfr.root 1476741600000000 ./root_files/output4.root ./root_files/position_pr.root;
+
+echo "--> Running analysis"
+#protons 2016
+#./runAna_protons ./root_files/output2.root ./root_files/output3.root ./root_files/position_wf.root;
+#./runAna_protons ./root_files/output4.root ./root_files/output5.root ./root_files/position_pr.root;
+#ions 2016
+#./runAna_ions ./root_files/output2_ions.root ./root_files/output3_ions.root ./root_files/position_wf.root;
+#./runAna_ions ./root_files/output4_ions.root ./root_files/output5_ions.root ./root_files/position_pr.root;
+
+echo "--> Finished."
+
+
