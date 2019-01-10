@@ -18,6 +18,9 @@ int main(int argc, char *argv[])
         return -1;
     }
 
+    cout<<"--> Input file:"<<argv[1]<<endl;
+    cout<<"--> Output file:"<<argv[2]<<endl;
+
     Tree pointer(argv[1]);
 
     TFile *file = new TFile(argv[2],"recreate");
@@ -37,14 +40,14 @@ int main(int argc, char *argv[])
     Double_t rise_time[Constants::nCh];
     Double_t fall_time[Constants::nCh];
     Double_t charge[Constants::nCh];
-    Double_t width_at_level[Constants::nCh];
+    Double_t width_at_cft[Constants::nCh];
     Int_t num_peaks[Constants::nCh];
     Int_t num_peaks_true[Constants::nCh];
     // Per peak
     Double_t max_ampl_per_peak[Constants::nCh][Constants::nPeakMax];
     Double_t time_max_ampl_per_peak[Constants::nCh][Constants::nPeakMax];
     Double_t time_level_per_peak[Constants::nCh][Constants::nPeakMax];
-    Double_t width_at_level_per_peak[Constants::nCh][Constants::nPeakMax];
+    Double_t width_at_cft_per_peak[Constants::nCh][Constants::nPeakMax];
 
     TString tdc_ss = "tdc/D";
     TString untime_ss = "untime/D";
@@ -58,14 +61,14 @@ int main(int argc, char *argv[])
     TString rise_time_ss = "rise_time[";
     TString fall_time_ss = "fall_time[";
     TString charge_ss = "charge[";
-    TString width_at_level_ss = "width_at_level[";
+    TString width_at_cft_ss = "width_at_cft[";
     TString num_peaks_ss = "num_peaks[";
     TString num_peaks_true_ss = "num_peaks_true[";
 
     TString max_ampl_per_peak_ss = "max_ampl_per_peak[";
     TString time_max_ampl_per_peak_ss = "time_max_ampl_per_peak[";
     TString time_level_per_peak_ss = "time_level_per_peak[";
-    TString width_at_level_per_peak_ss = "width_at_level_per_peak[";
+    TString width_at_cft_per_peak_ss = "width_at_cft_per_peak[";
 
     max_ampl_ss += Constants::nCh;
     min_ampl_ss += Constants::nCh;
@@ -77,24 +80,24 @@ int main(int argc, char *argv[])
     rise_time_ss += Constants::nCh;
     fall_time_ss += Constants::nCh;
     charge_ss += Constants::nCh;
-    width_at_level_ss += Constants::nCh;
+    width_at_cft_ss += Constants::nCh;
     num_peaks_ss += Constants::nCh;
     num_peaks_true_ss += Constants::nCh;
 
     max_ampl_per_peak_ss += Constants::nCh;
     time_max_ampl_per_peak_ss += Constants::nCh;
     time_level_per_peak_ss += Constants::nCh;
-    width_at_level_per_peak_ss += Constants::nCh;
+    width_at_cft_per_peak_ss += Constants::nCh;
 
     max_ampl_per_peak_ss += "][";
     time_max_ampl_per_peak_ss += "][";
     time_level_per_peak_ss += "][";
-    width_at_level_per_peak_ss += "][";
+    width_at_cft_per_peak_ss += "][";
 
     max_ampl_per_peak_ss += Constants::nPeakMax;
     time_max_ampl_per_peak_ss += Constants::nPeakMax;
     time_level_per_peak_ss += Constants::nPeakMax;
-    width_at_level_per_peak_ss += Constants::nPeakMax;
+    width_at_cft_per_peak_ss += Constants::nPeakMax;
 
     mean_value_ss +="]/D";
     max_ampl_ss +="]/D";
@@ -106,14 +109,14 @@ int main(int argc, char *argv[])
     rise_time_ss +="]/D";
     fall_time_ss +="]/D";
     charge_ss +="]/D";
-    width_at_level_ss +="]/D";
+    width_at_cft_ss +="]/D";
     num_peaks_ss +="]/I";
     num_peaks_true_ss +="]/I";
 
     max_ampl_per_peak_ss +="]/D";
     time_max_ampl_per_peak_ss +="]/D";
     time_level_per_peak_ss +="]/D";
-    width_at_level_per_peak_ss +="]/D";
+    width_at_cft_per_peak_ss +="]/D";
 
     tree->Branch("UnixTime",    &untime,        untime_ss.Data());
     tree->Branch("TDC",         &tdc,           tdc_ss.Data());
@@ -123,7 +126,7 @@ int main(int argc, char *argv[])
     tree->Branch("TimeMaxAmp", time_max_ampl, time_max_ampl_ss.Data());
     tree->Branch("TimeMinAmp", time_min_ampl, time_min_ampl_ss.Data());
     tree->Branch("TimeLevel", time_level, time_level_ss.Data());
-    tree->Branch("WidthAtTheLevel", width_at_level, width_at_level_ss.Data());
+    tree->Branch("WidthAtTimeCF", width_at_cft, width_at_cft_ss.Data());
     tree->Branch("MeanValue20Points", mean_value_20p, mean_value_ss.Data());
     tree->Branch("TimeCF", time_cf, time_cf_ss.Data());
     tree->Branch("RiseTime", rise_time, rise_time_ss.Data());
@@ -135,36 +138,38 @@ int main(int argc, char *argv[])
     tree->Branch("MaxAmpPerPeak", max_ampl_per_peak, max_ampl_per_peak_ss.Data());
     tree->Branch("TimeMaxAmpPerPeak", time_max_ampl_per_peak, time_max_ampl_per_peak_ss.Data());
     tree->Branch("TimeLevelPerPeak", time_level_per_peak, time_level_per_peak_ss.Data());
-    tree->Branch("WidthAtTheLevelPerPeak", width_at_level_per_peak, width_at_level_per_peak_ss.Data());
+    tree->Branch("WidthAtTimeCFPerPeak", width_at_cft_per_peak, width_at_cft_per_peak_ss.Data());
 
     for (Int_t i = 0; i < Constants::nCh; i++)
     {
-        Amplitude[i] = -999;
-        max_ampl[i] = -999;
-        min_ampl[i] = -999;
-        time_max_ampl[i] = -999;
-        time_min_ampl[i] = -999;
-        width_at_level[i] = -999;
-        time_level[i] = -999;
-        time_cf[i] = -999;
-        mean_value_20p[i] = -999;
-        rise_time[i] = -999;
-        fall_time[i] = -999;
-        charge[i] = -999;
-        num_peaks[i] = -999;
-        num_peaks_true[i] = -999;
+        Amplitude[i]        = -999;
+        max_ampl[i]         = -999;
+        min_ampl[i]         = -999;
+        time_max_ampl[i]    = -999;
+        time_min_ampl[i]    = -999;
+        width_at_cft[i]     = -999;
+        time_level[i]       = -999;
+        time_cf[i]          = -999;
+        mean_value_20p[i]   = -999;
+        rise_time[i]        = -999;
+        fall_time[i]        = -999;
+        charge[i]           = -999;
+        num_peaks[i]        = -999;
+        num_peaks_true[i]   = -999;
 
         for(Int_t j = 0; j < Constants::nPeakMax; j++)
         {
-            max_ampl_per_peak[i][j] = -999;
-            time_max_ampl_per_peak[i][j] = -999;
-            width_at_level_per_peak[i][j] = -999;
-            time_level_per_peak[i][j] = -999;
+            max_ampl_per_peak[i][j]         = -999;
+            time_max_ampl_per_peak[i][j]    = -999;
+            width_at_cft_per_peak[i][j]     = -999;
+            time_level_per_peak[i][j]       = -999;
         }
     }
 
     Long64_t nEvents = 0;
     pointer.GetNumEntries(nEvents);
+
+    cout<<"--> nEvents = "<<nEvents<<endl;
 
     for(Int_t eventID = 0; eventID < nEvents; eventID++)
     {
@@ -177,7 +182,7 @@ int main(int argc, char *argv[])
             pointer.GetMaxAmpl(Amplitude, max_ampl[channelID], time_max_ampl[channelID]);
             pointer.GetMinAmpl(Amplitude, min_ampl[channelID], time_min_ampl[channelID]);
             pointer.GetTimeAtLevel(Amplitude, Constants::Level[channelID], time_max_ampl[channelID], time_level[channelID]);
-            pointer.GetWidth(Amplitude, Constants::Level[channelID],time_max_ampl[channelID],width_at_level[channelID]);
+            pointer.GetWidth(Amplitude, Constants::CF[channelID]*max_ampl[channelID],time_max_ampl[channelID],width_at_cft[channelID]);
             pointer.GetTimeCF(Amplitude, Constants::CF[channelID],max_ampl[channelID],time_max_ampl[channelID],time_cf[channelID]);
             pointer.GetRiseTime(Amplitude, max_ampl[channelID],time_max_ampl[channelID],rise_time[channelID]);
             pointer.GetFallTime(Amplitude, max_ampl[channelID],time_max_ampl[channelID],fall_time[channelID]);
@@ -190,7 +195,7 @@ int main(int argc, char *argv[])
             {
                 pointer.GetMaxAmplPerPeak(Amplitude, Constants::Level[channelID], max_ampl_per_peak[channelID], time_max_ampl_per_peak[channelID]);
                 pointer.GetTimeAtLevelPerPeak(Amplitude, Constants::Level[channelID], time_level_per_peak[channelID]);
-                pointer.GetWidthPerPeak(Amplitude, Constants::Level[channelID],width_at_level_per_peak[channelID]);
+                pointer.GetWidthPerPeak(Amplitude, Constants::CF[channelID]*max_ampl[channelID],width_at_cft_per_peak[channelID]);
             }
         }
         untime = pointer.UnixTime;
@@ -200,35 +205,36 @@ int main(int argc, char *argv[])
 
         for (Int_t i = 0; i < Constants::nCh; i++)
         {
-            Amplitude[i] = -999;
-            max_ampl[i] = -999;
-            min_ampl[i] = -999;
-            time_max_ampl[i] = -999;
-            time_min_ampl[i] = -999;
-            width_at_level[i] = -999;
-            time_level[i] = -999;
-            time_cf[i] = -999;
-            mean_value_20p[i] = -999;
-            rise_time[i] = -999;
-            fall_time[i] = -999;
-            charge[i] = -999;
-            num_peaks[i] = -999;
-            num_peaks_true[i] = -999;
+            Amplitude[i]        = -999;
+            max_ampl[i]         = -999;
+            min_ampl[i]         = -999;
+            time_max_ampl[i]    = -999;
+            time_min_ampl[i]    = -999;
+            width_at_cft[i]     = -999;
+            time_level[i]       = -999;
+            time_cf[i]          = -999;
+            mean_value_20p[i]   = -999;
+            rise_time[i]        = -999;
+            fall_time[i]        = -999;
+            charge[i]           = -999;
+            num_peaks[i]        = -999;
+            num_peaks_true[i]   = -999;
 
             for(Int_t j = 0; j < Constants::nPeakMax; j++)
             {
-                max_ampl_per_peak[i][j] = -999;
-                time_max_ampl_per_peak[i][j] = -999;
-                width_at_level_per_peak[i][j] = -999;
-                time_level_per_peak[i][j] = -999;
+                max_ampl_per_peak[i][j]         = -999;
+                time_max_ampl_per_peak[i][j]    = -999;
+                width_at_cft_per_peak[i][j]     = -999;
+                time_level_per_peak[i][j]       = -999;
             }
         }
-
-        if (eventID%10000 == 0)
+        if(eventID%1000 == 0)
         {
-            cout<<" "<<eventID<<" / "<<nEvents<<endl;
+            printf("\r--> Working: %3.1f %%",100*(Double_t)eventID/nEvents);
+            fflush(stdout);
         }
     }
+    cout<<endl;
     file->Write();
     file->Close();
 

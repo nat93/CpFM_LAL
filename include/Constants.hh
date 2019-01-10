@@ -5,9 +5,8 @@ namespace Constants
 {
     static const int nCh = 3;
     static const int nPnt = 1024;
-    static const double nVsTopC = (7188.0/1.345);
-    static const double dTime = 0.3125; // for protons 2016
-    //static const double dTime = 2.5; //for ions 2016
+    static const double dTime = 0.3125; // for protons & ions 2016
+    //static const double dTime = 2.5; //for only some ions 2016
     static const double Level[] = {0.200,0.006,0.006};
     static const double ChargeLevel[] = {0.0,150.0,150.0};
     static const double CF[] = {0.5, 0.5, 0.5};

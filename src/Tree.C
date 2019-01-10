@@ -31,7 +31,6 @@ void Tree::Loop()
 
 void Tree::VisualisationAllChannels(Int_t nEv)
 {
-
     if (fChain == 0) return;
 
     TCanvas *vis = new TCanvas("vis","CpFM",5,5,600,600);
@@ -50,11 +49,13 @@ void Tree::VisualisationAllChannels(Int_t nEv)
 
         TGraph *gr = new TGraph(Constants::nPnt,t,amp);
 
-        TString title = "WaveForm CH"; title += j;
+        TString title = "WaveForm CH["; title += j; title += "]";
         gr->SetTitle(title.Data());
-        gr->GetXaxis()->SetTitle("Time / ns");
-        gr->GetYaxis()->SetTitle("Amplitude / V");
-        gr->Draw("APL");
+        gr->GetXaxis()->SetTitle("Time [ns]");
+        gr->GetYaxis()->SetTitle("Amplitude [V]");
+        gr->GetXaxis()->CenterTitle();
+        gr->GetYaxis()->CenterTitle();
+        gr->Draw("AL");
     }
     vis->SaveAs("VisualAllCh.root");
 }
@@ -80,7 +81,7 @@ void Tree::VisualisationOnlyOneChannel(Int_t nEv,Int_t nChannel)
     Double_t time_min_ampl;
     Double_t time_level;
     Double_t time_cf;
-    Double_t width_at_level;
+    Double_t width_cft;
     Double_t rise_time;
     Double_t fall_time;
     Int_t num_peaks = 0;
@@ -91,86 +92,105 @@ void Tree::VisualisationOnlyOneChannel(Int_t nEv,Int_t nChannel)
     GetMaxAmpl(amp, max_ampl, time_max_ampl);
     GetMinAmpl(amp, min_ampl, time_min_ampl);
     GetTimeAtLevel(amp, Constants::Level[nChannel], time_max_ampl, time_level);
-    GetWidth(amp, Constants::Level[nChannel],time_max_ampl,width_at_level);
+    GetWidth(amp, Constants::CF[nChannel]*max_ampl,time_max_ampl,width_cft);
     GetTimeCF(amp, Constants::CF[nChannel],max_ampl,time_max_ampl,time_cf);
     GetRiseTime(amp, max_ampl,time_max_ampl,rise_time);
     GetFallTime(amp, max_ampl,time_max_ampl,fall_time);
     GetTrueNumPeaks(amp, Constants::Level[nChannel], num_peaks);
+
+    Double_t t_min_window = time_max_ampl - 6*rise_time;
+    Double_t t_max_window = time_max_ampl + 7*rise_time;
 
     if(num_peaks > 0)
     {
         GetMaxAmplPerPeak(amp, Constants::Level[nChannel], max_ampl_per_peak, time_max_ampl_per_peak);
     }
 
+    // Waveform
     TGraph *gr = new TGraph(Constants::nPnt,t,amp);
     gr->SetMarkerStyle(21);
+    gr->SetMarkerColor(kBlue);
     gr->SetLineWidth(2);
-    gr->GetXaxis()->SetTitle("time / ns");
-    gr->GetYaxis()->SetTitle("Amplitude / V");
+    gr->SetTitle("");
+    gr->GetXaxis()->SetTitle("time [ns]");
+    gr->GetYaxis()->SetTitle("Amplitude [V]");
+//    gr->GetXaxis()->SetRangeUser(t_min_window,t_max_window);
+    gr->GetXaxis()->CenterTitle();
+    gr->GetYaxis()->CenterTitle();
     gr->Draw("APL");
-
-    TLine *line1 = new TLine(t[0],mean_value_20p,t[Constants::nPnt-1],mean_value_20p);
-    line1->SetLineWidth(2);
+/*
+    // Base line
+    TLine *line1 = new TLine(t_min_window,mean_value_20p,t_max_window,mean_value_20p);
+    line1->SetLineWidth(1);
     line1->SetLineStyle(1);
     line1->SetLineColor(kBlue);
     line1->Draw("same");
 
-    TLine *line2 = new TLine(t[0],max_ampl,t[Constants::nPnt-1],max_ampl);
-    line2->SetLineWidth(2);
+    // Maximum Amplitude
+    TLine *line2 = new TLine(t_min_window,max_ampl,t_max_window,max_ampl);
+    line2->SetLineWidth(1);
     line2->SetLineStyle(2);
     line2->SetLineColor(kRed);
     line2->Draw("same");
 
+    // Minimum Amplitude
     TLine *line3 = new TLine(t[0],min_ampl,t[Constants::nPnt-1],min_ampl);
-    line3->SetLineWidth(2);
+    line3->SetLineWidth(1);
     line3->SetLineStyle(2);
     line3->SetLineColor(kMagenta);
     line3->Draw("same");
 
+    // Time at level
     TLine *line4 = new TLine(time_level,min_ampl,time_level,max_ampl);
-    line4->SetLineWidth(2);
+    line4->SetLineWidth(1);
     line4->SetLineStyle(2);
     line4->SetLineColor(kCyan);
     line4->Draw("same");
 
+    // Level
     TLine *line5 = new TLine(t[0],Constants::Level[nChannel],t[Constants::nPnt-1],Constants::Level[nChannel]);
-    line5->SetLineWidth(2);
+    line5->SetLineWidth(1);
     line5->SetLineStyle(2);
     line5->SetLineColor(kYellow);
     line5->Draw("same");
 
-    TLine *line6 = new TLine(time_level,Constants::Level[nChannel],time_level+width_at_level,Constants::Level[nChannel]);
-    line6->SetLineWidth(2);
+    // Width_cft
+    TLine *line6 = new TLine(time_cf,Constants::CF[nChannel]*max_ampl,time_cf+width_cft,Constants::CF[nChannel]*max_ampl);
+    line6->SetLineWidth(1);
     line6->SetLineStyle(1);
     line6->SetLineColor(kRed);
     line6->Draw("same");
 
-    TLine *line7 = new TLine(time_cf,min_ampl,time_cf,max_ampl);
-    line7->SetLineWidth(2);
+    // CFT50
+    TLine *line7 = new TLine(time_cf,0,time_cf,Constants::CF[nChannel]*max_ampl);
+    line7->SetLineWidth(1);
     line7->SetLineStyle(2);
     line7->SetLineColor(kOrange);
     line7->Draw("same");
 
+    // Charge
     TLine *line8 = new TLine(time_max_ampl-Constants::charge_wind_left,min_ampl,time_max_ampl-Constants::charge_wind_left,max_ampl);
-    line8->SetLineWidth(2);
+    line8->SetLineWidth(1);
     line8->SetLineStyle(2);
     line8->SetLineColor(kViolet);
     line8->Draw("same");
 
     TLine *line9 = new TLine(time_max_ampl+Constants::charge_wind_right,min_ampl,time_max_ampl+Constants::charge_wind_right,max_ampl);
-    line9->SetLineWidth(2);
+    line9->SetLineWidth(1);
     line9->SetLineStyle(2);
     line9->SetLineColor(kViolet);
     line9->Draw("same");
 
-    TLine *line10 = new TLine(t[0],max_ampl*0.1,t[Constants::nPnt-1],max_ampl*0.1);
-    line10->SetLineWidth(2);
+    // CFT10
+    TLine *line10 = new TLine(t_min_window,max_ampl*0.1,t_max_window,max_ampl*0.1);
+    line10->SetLineWidth(1);
     line10->SetLineStyle(2);
     line10->SetLineColor(kGreen);
     line10->Draw("same");
 
-    TLine *line11 = new TLine(t[0],max_ampl*0.9,t[Constants::nPnt-1],max_ampl*0.9);
-    line11->SetLineWidth(2);
+    // CFT90
+    TLine *line11 = new TLine(t_min_window,max_ampl*0.9,t_max_window,max_ampl*0.9);
+    line11->SetLineWidth(1);
     line11->SetLineStyle(2);
     line11->SetLineColor(kGreen);
     line11->Draw("same");
@@ -194,8 +214,9 @@ void Tree::VisualisationOnlyOneChannel(Int_t nEv,Int_t nChannel)
         }
     }
 
+    // Rise Time
     TLine *line12 = new TLine(qw1,max_ampl*0.9,qw1-rise_time,max_ampl*0.1);
-    line12->SetLineWidth(2);
+    line12->SetLineWidth(1);
     line12->SetLineStyle(1);
     line12->SetLineColor(kGreen);
     line12->Draw("same");
@@ -216,24 +237,26 @@ void Tree::VisualisationOnlyOneChannel(Int_t nEv,Int_t nChannel)
         }
     }
 
+    // Fall Time
     TLine *line13 = new TLine(qw1,max_ampl*0.9,qw1+fall_time,max_ampl*0.1);
-    line13->SetLineWidth(2);
+    line13->SetLineWidth(1);
     line13->SetLineStyle(1);
     line13->SetLineColor(kTeal);
     line13->Draw("same");
 
+    // Each Peak
     if(num_peaks > 0)
     {
         TLine *line14[num_peaks];
         for(Int_t k = 0; k < num_peaks; k++)
         {
             line14[k] = new TLine(time_max_ampl_per_peak[k],min_ampl,time_max_ampl_per_peak[k],max_ampl);
-            line14[k]->SetLineWidth(2);
+            line14[k]->SetLineWidth(1);
             line14[k]->SetLineStyle(2);
             line14[k]->SetLineColor(kRed);
             line14[k]->Draw("same");
         }
-    }
+    }*/
 
     viss->SaveAs("VisualOneCh.root");
 }
@@ -453,9 +476,9 @@ void Tree::GetCharge(Double_t *InAmpl, Double_t InTime, Double_t &Charge)
     Charge = 0;
     for(Int_t i = 0; i < Constants::nPnt; i++)
     {
-        if(i*Constants::dTime > (InTime - Constants::charge_wind_left) && i*Constants::dTime < (InTime + Constants::charge_wind_right))
+        if(1)//(i*Constants::dTime > (InTime - Constants::charge_wind_left) && i*Constants::dTime < (InTime + Constants::charge_wind_right))
         {
-            Charge += (InAmpl[i]*Constants::dTime)*Constants::nVsTopC;
+            Charge += (InAmpl[i]*Constants::dTime);
         }
     }
 }
