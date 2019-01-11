@@ -47,14 +47,14 @@ int main(int argc, char *argv[])
     Double_t rise_time[Constants::nCh];
     Double_t fall_time[Constants::nCh];
     Double_t charge[Constants::nCh];
-    Double_t width_at_level[Constants::nCh];
+    Double_t width_at_cft[Constants::nCh];
     Int_t num_peaks[Constants::nCh];
     Int_t num_peaks_true[Constants::nCh];
     // Per peak
     Double_t max_ampl_per_peak[Constants::nCh][Constants::nPeakMax];
     Double_t time_max_ampl_per_peak[Constants::nCh][Constants::nPeakMax];
     Double_t time_level_per_peak[Constants::nCh][Constants::nPeakMax];
-    Double_t width_at_level_per_peak[Constants::nCh][Constants::nPeakMax];
+    Double_t width_at_cft_per_peak[Constants::nCh][Constants::nPeakMax];
 
     TString tdc_ss = "tdc/D";
     TString untime_ss = "untime/D";
@@ -68,14 +68,14 @@ int main(int argc, char *argv[])
     TString rise_time_ss = "rise_time[";
     TString fall_time_ss = "fall_time[";
     TString charge_ss = "charge[";
-    TString width_at_level_ss = "width_at_level[";
+    TString width_at_cft_ss = "width_at_cft[";
     TString num_peaks_ss = "num_peaks[";
     TString num_peaks_true_ss = "num_peaks_true[";
 
     TString max_ampl_per_peak_ss = "max_ampl_per_peak[";
     TString time_max_ampl_per_peak_ss = "time_max_ampl_per_peak[";
     TString time_level_per_peak_ss = "time_level_per_peak[";
-    TString width_at_level_per_peak_ss = "width_at_level_per_peak[";
+    TString width_at_cft_per_peak_ss = "width_at_cft_per_peak[";
 
     max_ampl_ss += Constants::nCh;
     min_ampl_ss += Constants::nCh;
@@ -87,24 +87,24 @@ int main(int argc, char *argv[])
     rise_time_ss += Constants::nCh;
     fall_time_ss += Constants::nCh;
     charge_ss += Constants::nCh;
-    width_at_level_ss += Constants::nCh;
+    width_at_cft_ss += Constants::nCh;
     num_peaks_ss += Constants::nCh;
     num_peaks_true_ss += Constants::nCh;
 
     max_ampl_per_peak_ss += Constants::nCh;
     time_max_ampl_per_peak_ss += Constants::nCh;
     time_level_per_peak_ss += Constants::nCh;
-    width_at_level_per_peak_ss += Constants::nCh;
+    width_at_cft_per_peak_ss += Constants::nCh;
 
     max_ampl_per_peak_ss += "][";
     time_max_ampl_per_peak_ss += "][";
     time_level_per_peak_ss += "][";
-    width_at_level_per_peak_ss += "][";
+    width_at_cft_per_peak_ss += "][";
 
     max_ampl_per_peak_ss += Constants::nPeakMax;
     time_max_ampl_per_peak_ss += Constants::nPeakMax;
     time_level_per_peak_ss += Constants::nPeakMax;
-    width_at_level_per_peak_ss += Constants::nPeakMax;
+    width_at_cft_per_peak_ss += Constants::nPeakMax;
 
     mean_value_ss +="]/D";
     max_ampl_ss +="]/D";
@@ -116,14 +116,14 @@ int main(int argc, char *argv[])
     rise_time_ss +="]/D";
     fall_time_ss +="]/D";
     charge_ss +="]/D";
-    width_at_level_ss +="]/D";
+    width_at_cft_ss +="]/D";
     num_peaks_ss +="]/I";
     num_peaks_true_ss +="]/I";
 
     max_ampl_per_peak_ss +="]/D";
     time_max_ampl_per_peak_ss +="]/D";
     time_level_per_peak_ss +="]/D";
-    width_at_level_per_peak_ss +="]/D";
+    width_at_cft_per_peak_ss +="]/D";
 
     tree->Branch("UnixTime",    &untime,        untime_ss.Data());
     tree->Branch("TDC",         &tdc,           tdc_ss.Data());
@@ -133,7 +133,7 @@ int main(int argc, char *argv[])
     tree->Branch("TimeMaxAmp", time_max_ampl, time_max_ampl_ss.Data());
     tree->Branch("TimeMinAmp", time_min_ampl, time_min_ampl_ss.Data());
     tree->Branch("TimeLevel", time_level, time_level_ss.Data());
-    tree->Branch("WidthAtTheLevel", width_at_level, width_at_level_ss.Data());
+    tree->Branch("WidthAtTimeCF", width_at_cft, width_at_cft_ss.Data());
     tree->Branch("MeanValue20Points", mean_value_20p, mean_value_ss.Data());
     tree->Branch("TimeCF", time_cf, time_cf_ss.Data());
     tree->Branch("RiseTime", rise_time, rise_time_ss.Data());
@@ -145,7 +145,7 @@ int main(int argc, char *argv[])
     tree->Branch("MaxAmpPerPeak", max_ampl_per_peak, max_ampl_per_peak_ss.Data());
     tree->Branch("TimeMaxAmpPerPeak", time_max_ampl_per_peak, time_max_ampl_per_peak_ss.Data());
     tree->Branch("TimeLevelPerPeak", time_level_per_peak, time_level_per_peak_ss.Data());
-    tree->Branch("WidthAtTheLevelPerPeak", width_at_level_per_peak, width_at_level_per_peak_ss.Data());
+    tree->Branch("WidthAtTimeCFPerPeak", width_at_cft_per_peak, width_at_cft_per_peak_ss.Data());
 
     for (Int_t i = 0; i < Constants::nCh; i++)
     {
@@ -153,7 +153,7 @@ int main(int argc, char *argv[])
         min_ampl[i] = -999;
         time_max_ampl[i] = -999;
         time_min_ampl[i] = -999;
-        width_at_level[i] = -999;
+        width_at_cft[i] = -999;
         time_level[i] = -999;
         time_cf[i] = -999;
         mean_value_20p[i] = -999;
@@ -167,7 +167,7 @@ int main(int argc, char *argv[])
         {
             max_ampl_per_peak[i][j] = -999;
             time_max_ampl_per_peak[i][j] = -999;
-            width_at_level_per_peak[i][j] = -999;
+            width_at_cft_per_peak[i][j] = -999;
             time_level_per_peak[i][j] = -999;
         }
     }
@@ -202,6 +202,7 @@ int main(int argc, char *argv[])
                     txt>>word;                                  //ChannelName
                     txt>>word;                                  //EventID
                     txt>>mean_value_20p[chid];                  //MeasuredBaseline[Volts]
+                    mean_value_20p[chid] = (-1)*mean_value_20p[chid];
                     txt>>max_ampl[chid];                        //Amplitude[Volts]
                     max_ampl[chid] = (-1)*max_ampl[chid];
                     txt>>time_max_ampl[chid];                   //PeakTime[ns]
@@ -209,7 +210,7 @@ int main(int argc, char *argv[])
                     charge[chid] = (-1)*charge[chid];
                     txt>>LeadingEdgeTime;                       //LeadingEdgeTime[ns]
                     txt>>TrailingEdgeTime;                      //TrailingEdgeTime[ns]
-                    width_at_level[chid] = LeadingEdgeTime - TrailingEdgeTime;
+                    width_at_cft[chid] = LeadingEdgeTime - TrailingEdgeTime;
                     time_level[chid] = TrailingEdgeTime;
                     time_cf[chid] = TrailingEdgeTime;
                     txt>>num_peaks[chid];                       //Peaks[count]

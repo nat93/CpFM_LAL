@@ -49,12 +49,14 @@ void Tree::VisualisationAllChannels(Int_t nEv)
 
         TGraph *gr = new TGraph(Constants::nPnt,t,amp);
 
-        TString title = "WaveForm CH["; title += j; title += "]";
+        TString title = "Waveform CH["; title += j; title += "]";
         gr->SetTitle(title.Data());
         gr->GetXaxis()->SetTitle("Time [ns]");
         gr->GetYaxis()->SetTitle("Amplitude [V]");
         gr->GetXaxis()->CenterTitle();
         gr->GetYaxis()->CenterTitle();
+        gr->SetLineColor(j+1);
+        gr->SetLineWidth(2);
         gr->Draw("AL");
     }
     vis->SaveAs("VisualAllCh.root");
@@ -97,9 +99,6 @@ void Tree::VisualisationOnlyOneChannel(Int_t nEv,Int_t nChannel)
     GetRiseTime(amp, max_ampl,time_max_ampl,rise_time);
     GetFallTime(amp, max_ampl,time_max_ampl,fall_time);
     GetTrueNumPeaks(amp, Constants::Level[nChannel], num_peaks);
-
-    Double_t t_min_window = time_max_ampl - 6*rise_time;
-    Double_t t_max_window = time_max_ampl + 7*rise_time;
 
     if(num_peaks > 0)
     {

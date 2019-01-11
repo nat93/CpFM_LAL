@@ -1,3 +1,5 @@
+// For calibration with ion beam data analysis using waveform analysis results
+
 //root
 #include "TROOT.h"
 #include "TChain.h"
@@ -98,11 +100,23 @@ int main(int argc, char *argv[])
     TH1D* h_6 = new TH1D("h_6","charge CH[2]",5000,0,50.0);
     TH2D* h_7 = new TH2D("h_7","charge vs max_ampl CH[1]",2000,0,2.0,5000,0,50.0);
     TH2D* h_8 = new TH2D("h_8","charge vs max_ampl CH[2]",2000,0,2.0,5000,0,50.0);
+    TH1D* h_9 = new TH1D("h_9","charge CH[1] (cut)",5000,0,50.0);
+    TH1D* h_10 = new TH1D("h_10","charge CH[2] (cut)",5000,0,50.0);
+    TH2D* h_11 = new TH2D("h_11","charge vs max_ampl CH[1] (cut)",2000,0,2.0,5000,0,50.0);
+    TH2D* h_12 = new TH2D("h_12","charge vs max_ampl CH[2] (cut)",2000,0,2.0,5000,0,50.0);
+    TH2D* h_13 = new TH2D("h_13","max_ampl CH[1] vs max_ampl CH[2]",2000,0,2.0,2000,0,2.0);
+    TH2D* h_14 = new TH2D("h_14","charge CH[1] vs charge CH[2]",5000,0,50.0,5000,0,50.0);
     //--------------------------------------------------------------------------//
 
     for(Int_t eventID = 0; eventID < nEntries; eventID++)
     {
         fChain1->GetEntry(eventID);
+
+        for(Int_t i = 0; i < Constants::nCh; i++)
+        {
+            charge[i]   = charge[i] - mean_value_20p[i]*Constants::dTime*Constants::nPnt;
+            max_ampl[i] = max_ampl[i] - mean_value_20p[i];
+        }
 
         if(eventID%1000 == 0)
         {
@@ -117,13 +131,27 @@ int main(int argc, char *argv[])
 
         if(max_ampl[0] > Constants::Level[0]) // check trigger channel
         {
-            printf("%10.10f\n",max_ampl[1]);
             h_2->Fill(max_ampl[1]);
             h_3->Fill(max_ampl[2]);
             h_5->Fill(charge[1]);
             h_6->Fill(charge[2]);
             h_7->Fill(max_ampl[1],charge[1]);
             h_8->Fill(max_ampl[2],charge[2]);
+
+            if(max_ampl[1] < 0.4)
+            {
+                h_9->Fill(charge[1]);
+                h_11->Fill(max_ampl[1],charge[1]);
+            }
+
+            if(max_ampl[2] < 1.2)
+            {
+                h_10->Fill(charge[2]);
+                h_12->Fill(max_ampl[2],charge[2]);
+            }
+
+            h_13->Fill(max_ampl[2],max_ampl[1]);
+            h_14->Fill(charge[2],charge[1]);
         }
     }
     cout<<endl;
@@ -142,6 +170,12 @@ int main(int argc, char *argv[])
     h_6->Write();
     h_7->Write();
     h_8->Write();
+    h_9->Write();
+    h_10->Write();
+    h_11->Write();
+    h_12->Write();
+    h_13->Write();
+    h_14->Write();
 
     file->Write();
     //--------------------------------------------------------------------------//

@@ -201,6 +201,8 @@ int main(int argc, char *argv[])
         untime = pointer.UnixTime;
         tdc = pointer.TDC;
 
+//        if(max_ampl[1] > 0.5 && max_ampl[1] < 0.6 && charge[1] > 3.5 && charge[1] < 4.5 && untime > 1479948000000000 && untime < 1479957600000000) cout<<eventID<<endl;
+
         tree->Fill();
 
         for (Int_t i = 0; i < Constants::nCh; i++)

@@ -29,7 +29,7 @@ OUTLIB	      = ./obj/
 
 #----------------------------------------------------#
 
-all: get_position convert_wf convert_pr getParam runAna_protons runAna_ions visWaveform
+all: get_position convert_wf convert_pr getParam runAna_calibration_wf runAna_calibration_pr visWaveform
 
 get_position: get_position.cc
 
@@ -37,9 +37,9 @@ convert_wf: convert_wf.cc
 
 convert_pr: convert_pr.cc
 
-runAna_ions: runAna_ions.cc
+runAna_calibration_wf: runAna_calibration_wf.cc
 
-runAna_protons: runAna_protons.cc
+runAna_calibration_pr: runAna_calibration_pr.cc
 
 getParam: getParam.cc obj/Tree.o  obj/Tree.o
 	$(CXX) $(CXXFLAGS) -o getParam $(OUTLIB)/*.o $(GLIBS) $<
@@ -58,5 +58,5 @@ clean:
 	rm -f convert_pr
 	rm -f getParam
 	rm -f visWaveform
-	rm -r runAna_ions
-	rm -r runAna_protons
+	rm -r runAna_calibration_wf
+	rm -r runAna_calibration_pr

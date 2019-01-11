@@ -18,9 +18,9 @@ echo "--> Visualisation of the data.";
 #./visWaveform /media/andrii/F492773C92770302/CpfmData/ROOT_FILES/output1.root 235437 2;
 #./visWaveform /media/andrii/F492773C92770302/CpfmData/ROOT_FILES/output1.root 244357 2;
 #ions 2016
-#./visWaveform /media/andrii/F492773C92770302/CpfmData/ROOT_FILES/output1_ions.root 93808 2; #one bunch
-./visWaveform /media/andrii/F492773C92770302/CpfmData/ROOT_FILES/output1_ions.root 237346 2; #two bunches
-#./visWaveform /media/andrii/F492773C92770302/CpfmData/ROOT_FILES/output1_ions.root 260976 2; #three bunches
+#./visWaveform /media/andrii/F492773C92770302/CpfmData/ROOT_FILES/output1_ions.root 93808 2; # R1
+#./visWaveform /media/andrii/F492773C92770302/CpfmData/ROOT_FILES/output1_ions.root 237346 2; # R2
+#./visWaveform /media/andrii/F492773C92770302/CpfmData/ROOT_FILES/output1_ions.root 223680 2; # R5
 
 echo "--> Getting Waveform parameters"
 #protons 2016
@@ -37,8 +37,8 @@ echo "--> Running analysis"
 #./runAna_protons ./root_files/output2.root ./root_files/output3.root ./root_files/position_wf.root;
 #./runAna_protons ./root_files/output4.root ./root_files/output5.root ./root_files/position_pr.root;
 #ions 2016
-#./runAna_ions /media/andrii/F492773C92770302/CpfmData/ROOT_FILES/output2_ions.root /media/andrii/F492773C92770302/CpfmData/ROOT_FILES/output3_ions.root
-#./runAna_ions ./root_files/output4_ions.root ./root_files/output5_ions.root ./root_files/position_pr.root;
+#./runAna_calibration_wf /media/andrii/F492773C92770302/CpfmData/ROOT_FILES/output2_ions.root /media/andrii/F492773C92770302/CpfmData/ROOT_FILES/output3_ions.root
+#./runAna_calibration_pr /media/andrii/F492773C92770302/CpfmData/ROOT_FILES/output4_ions.root /media/andrii/F492773C92770302/CpfmData/ROOT_FILES/output5_ions.root
 
 echo "--> Finished."
 
