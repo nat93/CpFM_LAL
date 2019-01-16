@@ -52,6 +52,7 @@ int main(int argc, char *argv[])
     Double_t width_at_level[Constants::nCh];
     Int_t num_peaks[Constants::nCh];
     Int_t num_peaks_true[Constants::nCh];
+    Int_t eventid;
     // Per peak
     Double_t max_ampl_per_peak[Constants::nCh][Constants::nPeakMax];
     Double_t time_max_ampl_per_peak[Constants::nCh][Constants::nPeakMax];
@@ -63,6 +64,7 @@ int main(int argc, char *argv[])
 
     fChain1->SetBranchAddress("UnixTime",               &untime);
     fChain1->SetBranchAddress("TDC",                    &tdc);
+    fChain1->SetBranchAddress("EventID",                &eventid);
     fChain1->SetBranchAddress("MaxAmp",                 max_ampl);
     fChain1->SetBranchAddress("MinAmp",                 min_ampl);
     fChain1->SetBranchAddress("TimeMaxAmp",             time_max_ampl);

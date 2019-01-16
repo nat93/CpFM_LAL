@@ -93,8 +93,10 @@ int main(int argc, char *argv[])
         {
             if(word == "Event")
             {
-                txt>>eventid; txt>>word; txt>>word;
-                txt>>untime; txt>>word; txt>>word;
+                txt>>eventid;
+                txt>>word; txt>>word;
+                txt>>untime;
+                txt>>word; txt>>word;
                 txt>>word; txt>>word; txt>>word;
                 txt>>tdc;
 

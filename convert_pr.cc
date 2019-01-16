@@ -50,6 +50,7 @@ int main(int argc, char *argv[])
     Double_t width_at_cft[Constants::nCh];
     Int_t num_peaks[Constants::nCh];
     Int_t num_peaks_true[Constants::nCh];
+    Int_t eventid;
     // Per peak
     Double_t max_ampl_per_peak[Constants::nCh][Constants::nPeakMax];
     Double_t time_max_ampl_per_peak[Constants::nCh][Constants::nPeakMax];
@@ -71,6 +72,7 @@ int main(int argc, char *argv[])
     TString width_at_cft_ss = "width_at_cft[";
     TString num_peaks_ss = "num_peaks[";
     TString num_peaks_true_ss = "num_peaks_true[";
+    TString eventid_ss = "eventid/I";
 
     TString max_ampl_per_peak_ss = "max_ampl_per_peak[";
     TString time_max_ampl_per_peak_ss = "time_max_ampl_per_peak[";
@@ -128,6 +130,7 @@ int main(int argc, char *argv[])
     tree->Branch("UnixTime",    &untime,        untime_ss.Data());
     tree->Branch("TDC",         &tdc,           tdc_ss.Data());
 
+    tree->Branch("EventID", &eventid, eventid_ss.Data());
     tree->Branch("MaxAmp", max_ampl, max_ampl_ss.Data());
     tree->Branch("MinAmp", min_ampl, min_ampl_ss.Data());
     tree->Branch("TimeMaxAmp", time_max_ampl, time_max_ampl_ss.Data());
@@ -177,6 +180,7 @@ int main(int argc, char *argv[])
     ifstream fp(argv[2]);
     string NameOfTheFile;
     Double_t LeadingEdgeTime = 0, TrailingEdgeTime = 0;
+    eventid = -999;
     while(fp>>NameOfTheFile)
     {
         TString inputFileName = argv[1]; inputFileName += NameOfTheFile;
@@ -186,8 +190,8 @@ int main(int argc, char *argv[])
         {
             if(word == "Event")
             {
+                txt>>eventid;           //EventID
                 txt>>word; txt>>word;
-                txt>>word;
                 txt>>untime;            //UnixTime
                 txt>>word; txt>>word;   //Timestamp
                 txt>>word; txt>>word;

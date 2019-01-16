@@ -43,6 +43,7 @@ int main(int argc, char *argv[])
     Double_t width_at_cft[Constants::nCh];
     Int_t num_peaks[Constants::nCh];
     Int_t num_peaks_true[Constants::nCh];
+    Int_t eventid;
     // Per peak
     Double_t max_ampl_per_peak[Constants::nCh][Constants::nPeakMax];
     Double_t time_max_ampl_per_peak[Constants::nCh][Constants::nPeakMax];
@@ -64,6 +65,7 @@ int main(int argc, char *argv[])
     TString width_at_cft_ss = "width_at_cft[";
     TString num_peaks_ss = "num_peaks[";
     TString num_peaks_true_ss = "num_peaks_true[";
+    TString eventid_ss = "eventid/I";
 
     TString max_ampl_per_peak_ss = "max_ampl_per_peak[";
     TString time_max_ampl_per_peak_ss = "time_max_ampl_per_peak[";
@@ -121,6 +123,7 @@ int main(int argc, char *argv[])
     tree->Branch("UnixTime",    &untime,        untime_ss.Data());
     tree->Branch("TDC",         &tdc,           tdc_ss.Data());
 
+    tree->Branch("EventID", &eventid, eventid_ss.Data());
     tree->Branch("MaxAmp", max_ampl, max_ampl_ss.Data());
     tree->Branch("MinAmp", min_ampl, min_ampl_ss.Data());
     tree->Branch("TimeMaxAmp", time_max_ampl, time_max_ampl_ss.Data());
@@ -167,13 +170,14 @@ int main(int argc, char *argv[])
     }
 
     Long64_t nEvents = 0;
+    eventid = -999;
     pointer.GetNumEntries(nEvents);
 
     cout<<"--> nEvents = "<<nEvents<<endl;
 
-    for(Int_t eventID = 0; eventID < nEvents; eventID++)
+    for(Int_t eventID_iter = 0; eventID_iter < nEvents; eventID_iter++)
     {
-        pointer.fChain->GetEntry(eventID);
+        pointer.fChain->GetEntry(eventID_iter);
         for(Int_t channelID = 0; channelID < Constants::nCh; channelID++)
         {
             // Common
@@ -200,8 +204,7 @@ int main(int argc, char *argv[])
         }
         untime = pointer.UnixTime;
         tdc = pointer.TDC;
-
-//        if(max_ampl[1] > 0.5 && max_ampl[1] < 0.6 && charge[1] > 3.5 && charge[1] < 4.5 && untime > 1479948000000000 && untime < 1479957600000000) cout<<eventID<<endl;
+        eventid = pointer.EventID;
 
         tree->Fill();
 
@@ -230,9 +233,10 @@ int main(int argc, char *argv[])
                 time_level_per_peak[i][j]       = -999;
             }
         }
-        if(eventID%1000 == 0)
+        eventid = -999;
+        if(eventID_iter%1000 == 0)
         {
-            printf("\r--> Working: %3.1f %%",100*(Double_t)eventID/nEvents);
+            printf("\r--> Working: %3.1f %%",100*(Double_t)eventID_iter/nEvents);
             fflush(stdout);
         }
     }
