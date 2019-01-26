@@ -29,15 +29,17 @@ OUTLIB	      = ./obj/
 
 #----------------------------------------------------#
 
-all: get_position convert_wf convert_pr convert_rt getParam runAna_calibration_wf runAna_calibration_pr visWaveform
+all: convert_ps convert_wf convert_pr convert_rt getParam runAna_calibration_wf runAna_calibration_pr visWaveform runAna_pr
 
-get_position: get_position.cc
+convert_ps: convert_ps.cc
 
 convert_wf: convert_wf.cc
 
 convert_pr: convert_pr.cc
 
 convert_rt: convert_rt.cc
+
+runAna_pr: runAna_pr.cc
 
 runAna_calibration_wf: runAna_calibration_wf.cc
 
@@ -55,7 +57,7 @@ obj/Tree.o: src/Tree.C src/Tree.h
 clean:
 	rm -f *~
 	rm -f $(OUTLIB)*.o
-	rm -f get_position
+	rm -f convert_ps
 	rm -f convert_wf
 	rm -f convert_pr
 	rm -f convert_rt
@@ -63,3 +65,4 @@ clean:
 	rm -f visWaveform
 	rm -r runAna_calibration_wf
 	rm -r runAna_calibration_pr
+	rm -r runAna_pr

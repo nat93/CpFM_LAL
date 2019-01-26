@@ -116,7 +116,7 @@ int main(int argc, char *argv[])
 
         for(Int_t i = 0; i < Constants::nCh; i++)
         {
-            charge[i]   = charge[i]*Constants::pCtoAu - mean_value_20p[i]*Constants::dTime*Constants::nPnt;
+            charge[i]   = charge[i]*Constants::pCtoAu - mean_value_20p[i]*Constants::ChargeLength;
             max_ampl[i] = max_ampl[i] - mean_value_20p[i];
         }
 

@@ -57,75 +57,75 @@ int main(int argc, char *argv[])
     Double_t time_level_per_peak[Constants::nCh][Constants::nPeakMax];
     Double_t width_at_cft_per_peak[Constants::nCh][Constants::nPeakMax];
 
-    TString tdc_ss = "tdc/D";
-    TString untime_ss = "untime/D";
-    TString max_ampl_ss = "max_ampl[";
-    TString min_ampl_ss = "min_ampl[";
-    TString mean_value_ss = "mean_value_20p[";
-    TString time_max_ampl_ss = "time_max_ampl[";
-    TString time_min_ampl_ss = "time_min_ampl[";
-    TString time_level_ss = "time_level[";
-    TString time_cf_ss = "time_cf[";
-    TString rise_time_ss = "rise_time[";
-    TString fall_time_ss = "fall_time[";
-    TString charge_ss = "charge[";
-    TString width_at_cft_ss = "width_at_cft[";
-    TString num_peaks_ss = "num_peaks[";
-    TString num_peaks_true_ss = "num_peaks_true[";
-    TString eventid_ss = "eventid/I";
+    TString tdc_ss              = "tdc/D";
+    TString untime_ss           = "untime/D";
+    TString max_ampl_ss         = "max_ampl[";
+    TString min_ampl_ss         = "min_ampl[";
+    TString mean_value_ss       = "mean_value_20p[";
+    TString time_max_ampl_ss    = "time_max_ampl[";
+    TString time_min_ampl_ss    = "time_min_ampl[";
+    TString time_level_ss       = "time_level[";
+    TString time_cf_ss          = "time_cf[";
+    TString rise_time_ss        = "rise_time[";
+    TString fall_time_ss        = "fall_time[";
+    TString charge_ss           = "charge[";
+    TString width_at_cft_ss     = "width_at_cft[";
+    TString num_peaks_ss        = "num_peaks[";
+    TString num_peaks_true_ss   = "num_peaks_true[";
+    TString eventid_ss          = "eventid/I";
 
-    TString max_ampl_per_peak_ss = "max_ampl_per_peak[";
-    TString time_max_ampl_per_peak_ss = "time_max_ampl_per_peak[";
-    TString time_level_per_peak_ss = "time_level_per_peak[";
-    TString width_at_cft_per_peak_ss = "width_at_cft_per_peak[";
+    TString max_ampl_per_peak_ss        = "max_ampl_per_peak[";
+    TString time_max_ampl_per_peak_ss   = "time_max_ampl_per_peak[";
+    TString time_level_per_peak_ss      = "time_level_per_peak[";
+    TString width_at_cft_per_peak_ss    = "width_at_cft_per_peak[";
 
-    max_ampl_ss += Constants::nCh;
-    min_ampl_ss += Constants::nCh;
-    mean_value_ss += Constants::nCh;
-    time_max_ampl_ss += Constants::nCh;
-    time_min_ampl_ss += Constants::nCh;
-    time_level_ss += Constants::nCh;
-    time_cf_ss += Constants::nCh;
-    rise_time_ss += Constants::nCh;
-    fall_time_ss += Constants::nCh;
-    charge_ss += Constants::nCh;
-    width_at_cft_ss += Constants::nCh;
-    num_peaks_ss += Constants::nCh;
-    num_peaks_true_ss += Constants::nCh;
+    max_ampl_ss         += Constants::nCh;
+    min_ampl_ss         += Constants::nCh;
+    mean_value_ss       += Constants::nCh;
+    time_max_ampl_ss    += Constants::nCh;
+    time_min_ampl_ss    += Constants::nCh;
+    time_level_ss       += Constants::nCh;
+    time_cf_ss          += Constants::nCh;
+    rise_time_ss        += Constants::nCh;
+    fall_time_ss        += Constants::nCh;
+    charge_ss           += Constants::nCh;
+    width_at_cft_ss     += Constants::nCh;
+    num_peaks_ss        += Constants::nCh;
+    num_peaks_true_ss   += Constants::nCh;
 
-    max_ampl_per_peak_ss += Constants::nCh;
-    time_max_ampl_per_peak_ss += Constants::nCh;
-    time_level_per_peak_ss += Constants::nCh;
-    width_at_cft_per_peak_ss += Constants::nCh;
+    max_ampl_per_peak_ss        += Constants::nCh;
+    time_max_ampl_per_peak_ss   += Constants::nCh;
+    time_level_per_peak_ss      += Constants::nCh;
+    width_at_cft_per_peak_ss    += Constants::nCh;
 
-    max_ampl_per_peak_ss += "][";
-    time_max_ampl_per_peak_ss += "][";
-    time_level_per_peak_ss += "][";
-    width_at_cft_per_peak_ss += "][";
+    max_ampl_per_peak_ss        += "][";
+    time_max_ampl_per_peak_ss   += "][";
+    time_level_per_peak_ss      += "][";
+    width_at_cft_per_peak_ss    += "][";
 
-    max_ampl_per_peak_ss += Constants::nPeakMax;
-    time_max_ampl_per_peak_ss += Constants::nPeakMax;
-    time_level_per_peak_ss += Constants::nPeakMax;
-    width_at_cft_per_peak_ss += Constants::nPeakMax;
+    max_ampl_per_peak_ss        += Constants::nPeakMax;
+    time_max_ampl_per_peak_ss   += Constants::nPeakMax;
+    time_level_per_peak_ss      += Constants::nPeakMax;
+    width_at_cft_per_peak_ss    += Constants::nPeakMax;
 
-    mean_value_ss +="]/D";
-    max_ampl_ss +="]/D";
-    min_ampl_ss +="]/D";
-    time_max_ampl_ss +="]/D";
-    time_min_ampl_ss +="]/D";
-    time_level_ss +="]/D";
-    time_cf_ss +="]/D";
-    rise_time_ss +="]/D";
-    fall_time_ss +="]/D";
-    charge_ss +="]/D";
-    width_at_cft_ss +="]/D";
-    num_peaks_ss +="]/I";
-    num_peaks_true_ss +="]/I";
+    mean_value_ss       +="]/D";
+    max_ampl_ss         +="]/D";
+    min_ampl_ss         +="]/D";
+    time_max_ampl_ss    +="]/D";
+    time_min_ampl_ss    +="]/D";
+    time_level_ss       +="]/D";
+    time_cf_ss          +="]/D";
+    rise_time_ss        +="]/D";
+    fall_time_ss        +="]/D";
+    charge_ss           +="]/D";
+    width_at_cft_ss     +="]/D";
+    num_peaks_ss        +="]/I";
+    num_peaks_true_ss   +="]/I";
 
-    max_ampl_per_peak_ss +="]/D";
-    time_max_ampl_per_peak_ss +="]/D";
-    time_level_per_peak_ss +="]/D";
-    width_at_cft_per_peak_ss +="]/D";
+    max_ampl_per_peak_ss        +="]/D";
+    time_max_ampl_per_peak_ss   +="]/D";
+    time_level_per_peak_ss      +="]/D";
+    width_at_cft_per_peak_ss    +="]/D";
 
     tree->Branch("UnixTime",    &untime,        untime_ss.Data());
     tree->Branch("TDC",         &tdc,           tdc_ss.Data());
@@ -186,7 +186,7 @@ int main(int argc, char *argv[])
         TString inputFileName = argv[1]; inputFileName += NameOfTheFile;
         ifstream txt(inputFileName.Data());
         cout<<"Reading the file: "<<inputFileName.Data()<<endl;
-        while (txt>>word)
+        while(txt>>word)
         {
             if(word == "Event")
             {
