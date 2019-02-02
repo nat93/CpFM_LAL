@@ -63,6 +63,6 @@ clean:
 	rm -f convert_rt
 	rm -f getParam
 	rm -f visWaveform
-	rm -r runAna_calibration_wf
-	rm -r runAna_calibration_pr
-	rm -r runAna_pr
+	rm -f runAna_calibration_wf
+	rm -f runAna_calibration_pr
+	rm -f runAna_pr

@@ -580,6 +580,8 @@ void function_3()
     const Double_t char_cpfm2_pro       = 0.019;
     const Double_t char_cpfm2_pro_err   = 5.9e-6;
 
+    const Double_t sps_rate             = 43000.0; // [Hz]
+
     TFile *_file_input = TFile::Open(input_file_meas.Data());
 
     TProfile* hprof_1  = (TProfile*)_file_input->Get("hprof_1");
@@ -588,9 +590,9 @@ void function_3()
     TProfile* hprof_4  = (TProfile*)_file_input->Get("hprof_4");
     TProfile* hprof_5  = (TProfile*)_file_input->Get("hprof_5");
     TProfile* hprof_6  = (TProfile*)_file_input->Get("hprof_6");
-    TProfile* hprof_7  = (TProfile*)_file_input->Get("hprof_7");
-    TProfile* hprof_8  = (TProfile*)_file_input->Get("hprof_8");
-    TProfile* hprof_9  = (TProfile*)_file_input->Get("hprof_9");
+//    TProfile* hprof_7  = (TProfile*)_file_input->Get("hprof_7");
+//    TProfile* hprof_8  = (TProfile*)_file_input->Get("hprof_8");
+//    TProfile* hprof_9  = (TProfile*)_file_input->Get("hprof_9");
 
     TH1D* h_1 = new TH1D("h_1",hprof_1->GetTitle(),10000,0,100);
     TH1D* h_2 = new TH1D("h_2",hprof_2->GetTitle(),10000,0,100);
@@ -601,7 +603,7 @@ void function_3()
 
     for(Int_t i = 1; i <= hprof_1->GetNbinsX(); i++)
     {
-        h_1->SetBinContent(i,hprof_1->GetBinContent(i)*hprof_7->GetBinContent(i));
+        /*h_1->SetBinContent(i,hprof_1->GetBinContent(i)*hprof_7->GetBinContent(i));
         h_2->SetBinContent(i,hprof_2->GetBinContent(i)*hprof_8->GetBinContent(i)/ampl_cpfm1_pro);
         h_3->SetBinContent(i,hprof_3->GetBinContent(i)*hprof_9->GetBinContent(i)/ampl_cpfm2_pro);
         h_4->SetBinContent(i,hprof_4->GetBinContent(i)*hprof_7->GetBinContent(i));
@@ -623,7 +625,25 @@ void function_3()
                                        TMath::Power(hprof_5->GetBinContent(i)*hprof_8->GetBinContent(i)*char_cpfm1_pro_err/(char_cpfm1_pro*char_cpfm1_pro),2)));
         h_6->SetBinError(i,TMath::Sqrt(TMath::Power(hprof_6->GetBinError(i)*hprof_9->GetBinContent(i)/char_cpfm2_pro,2)+
                                        TMath::Power(hprof_6->GetBinContent(i)*hprof_9->GetBinError(i)/char_cpfm2_pro,2)+
-                                       TMath::Power(hprof_6->GetBinContent(i)*hprof_9->GetBinContent(i)*char_cpfm2_pro_err/(char_cpfm2_pro*char_cpfm2_pro),2)));
+                                       TMath::Power(hprof_6->GetBinContent(i)*hprof_9->GetBinContent(i)*char_cpfm2_pro_err/(char_cpfm2_pro*char_cpfm2_pro),2)));*/
+        h_1->SetBinContent(i,hprof_1->GetBinContent(i)*sps_rate);
+        h_2->SetBinContent(i,hprof_2->GetBinContent(i)*sps_rate/ampl_cpfm1_pro);
+        h_3->SetBinContent(i,hprof_3->GetBinContent(i)*sps_rate/ampl_cpfm2_pro);
+        h_4->SetBinContent(i,hprof_4->GetBinContent(i)*sps_rate);
+        h_5->SetBinContent(i,hprof_5->GetBinContent(i)*sps_rate/char_cpfm1_pro);
+        h_6->SetBinContent(i,hprof_6->GetBinContent(i)*sps_rate/char_cpfm2_pro);
+
+        h_1->SetBinError(i,hprof_1->GetBinError(i)*sps_rate);
+        h_2->SetBinError(i,TMath::Sqrt(TMath::Power(hprof_2->GetBinError(i)*sps_rate/ampl_cpfm1_pro,2)+
+                                       TMath::Power(hprof_2->GetBinContent(i)*sps_rate*ampl_cpfm1_pro_err/(ampl_cpfm1_pro*ampl_cpfm1_pro),2)));
+        h_3->SetBinError(i,TMath::Sqrt(TMath::Power(hprof_3->GetBinError(i)*sps_rate/ampl_cpfm2_pro,2)+
+                                       TMath::Power(hprof_3->GetBinContent(i)*sps_rate*ampl_cpfm2_pro_err/(ampl_cpfm2_pro*ampl_cpfm2_pro),2)));
+        h_4->SetBinError(i,hprof_4->GetBinError(i)*sps_rate);
+        h_5->SetBinError(i,TMath::Sqrt(TMath::Power(hprof_5->GetBinError(i)*sps_rate/char_cpfm1_pro,2)+
+                                       TMath::Power(hprof_5->GetBinContent(i)*sps_rate*char_cpfm1_pro_err/(char_cpfm1_pro*char_cpfm1_pro),2)));
+        h_6->SetBinError(i,TMath::Sqrt(TMath::Power(hprof_6->GetBinError(i)*sps_rate/char_cpfm2_pro,2)+
+                                       TMath::Power(hprof_6->GetBinContent(i)*sps_rate*char_cpfm2_pro_err/(char_cpfm2_pro*char_cpfm2_pro),2)));
+
     }
 
     //--------------------------------------------------------------------------//
