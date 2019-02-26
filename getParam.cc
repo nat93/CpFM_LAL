@@ -26,13 +26,14 @@ int main(int argc, char *argv[])
     TFile *file = new TFile(argv[2],"recreate");
     TTree *tree = new TTree("Tree","A Root Tree");
 
+    Double_t AmplitudeRaw[Constants::nPnt];
     Double_t Amplitude[Constants::nPnt];
     // Common
     Double_t untime;
     Double_t tdc;
     Double_t max_ampl[Constants::nCh];
     Double_t min_ampl[Constants::nCh];
-    Double_t mean_value_20p[Constants::nCh];
+    Double_t mean_value_16p[Constants::nCh];
     Double_t time_max_ampl[Constants::nCh];
     Double_t time_min_ampl[Constants::nCh];
     Double_t time_level[Constants::nCh];
@@ -54,7 +55,7 @@ int main(int argc, char *argv[])
     TString untime_ss = "untime/D";
     TString max_ampl_ss = "max_ampl[";
     TString min_ampl_ss = "min_ampl[";
-    TString mean_value_ss = "mean_value_20p[";
+    TString mean_value_ss = "mean_value_16p[";
     TString time_max_ampl_ss = "time_max_ampl[";
     TString time_min_ampl_ss = "time_min_ampl[";
     TString time_level_ss = "time_level[";
@@ -130,7 +131,7 @@ int main(int argc, char *argv[])
     tree->Branch("TimeMinAmp", time_min_ampl, time_min_ampl_ss.Data());
     tree->Branch("TimeLevel", time_level, time_level_ss.Data());
     tree->Branch("WidthAtTimeCF", width_at_cft, width_at_cft_ss.Data());
-    tree->Branch("MeanValue20Points", mean_value_20p, mean_value_ss.Data());
+    tree->Branch("MeanValue16Points", mean_value_16p, mean_value_ss.Data());
     tree->Branch("TimeCF", time_cf, time_cf_ss.Data());
     tree->Branch("RiseTime", rise_time, rise_time_ss.Data());
     tree->Branch("FallTime", fall_time, fall_time_ss.Data());
@@ -145,6 +146,7 @@ int main(int argc, char *argv[])
 
     for (Int_t i = 0; i < Constants::nCh; i++)
     {
+        AmplitudeRaw[i]     = -999;
         Amplitude[i]        = -999;
         max_ampl[i]         = -999;
         min_ampl[i]         = -999;
@@ -153,7 +155,7 @@ int main(int argc, char *argv[])
         width_at_cft[i]     = -999;
         time_level[i]       = -999;
         time_cf[i]          = -999;
-        mean_value_20p[i]   = -999;
+        mean_value_16p[i]   = -999;
         rise_time[i]        = -999;
         fall_time[i]        = -999;
         charge[i]           = -999;
@@ -181,8 +183,8 @@ int main(int argc, char *argv[])
         for(Int_t channelID = 0; channelID < Constants::nCh; channelID++)
         {
             // Common
-            pointer.TransformAmplitude(channelID, Amplitude);
-            pointer.GetMean(channelID, mean_value_20p[channelID]);
+            pointer.TransformAmplitude(channelID, AmplitudeRaw);
+            pointer.GetMean16(AmplitudeRaw, mean_value_16p[channelID],Amplitude);
             pointer.GetMaxAmpl(Amplitude, max_ampl[channelID], time_max_ampl[channelID]);
             pointer.GetMinAmpl(Amplitude, min_ampl[channelID], time_min_ampl[channelID]);
             pointer.GetTimeAtLevel(Amplitude, Constants::Level[channelID], time_max_ampl[channelID], time_level[channelID]);
@@ -210,6 +212,7 @@ int main(int argc, char *argv[])
 
         for (Int_t i = 0; i < Constants::nCh; i++)
         {
+            AmplitudeRaw[i]     = -999;
             Amplitude[i]        = -999;
             max_ampl[i]         = -999;
             min_ampl[i]         = -999;
@@ -218,7 +221,7 @@ int main(int argc, char *argv[])
             width_at_cft[i]     = -999;
             time_level[i]       = -999;
             time_cf[i]          = -999;
-            mean_value_20p[i]   = -999;
+            mean_value_16p[i]   = -999;
             rise_time[i]        = -999;
             fall_time[i]        = -999;
             charge[i]           = -999;

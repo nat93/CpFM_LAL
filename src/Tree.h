@@ -68,8 +68,8 @@ public :
    virtual void     VisualisationAllChannels(Int_t nEv);
    virtual void     VisualisationOnlyOneChannel(Int_t nEv,Int_t nChannel);
    virtual void     GetNumEntries(Long64_t &nEntires);
-   virtual void     GetMean(Int_t nCh,Double_t &OutMean);
    virtual void     TransformAmplitude(Int_t nCh, Double_t *OutAmpl);
+   virtual void     GetMean16(Double_t *InAmpl, Double_t &OutMean, Double_t *OutAmpl);
    virtual void     GetMaxAmpl(Double_t *InAmpl, Double_t &OutAmpl, Double_t &OutTime);
    virtual void     GetMinAmpl(Double_t *InAmpl, Double_t &OutAmpl, Double_t &OutTime);
    virtual void     GetTimeAtLevel(Double_t *InAmpl, Double_t level, Double_t InTime, Double_t &OutTime);

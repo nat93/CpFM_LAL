@@ -65,7 +65,7 @@ int main(int argc, char *argv[])
     peaknum_ss += "]/D";
 
     string word;
-    Int_t chid, pntid, eventid;
+    Int_t chid, pntid, eventid, chid_id = 0;
     Double_t amplitude[Constants::nCh][Constants::nPnt], untime, tdc, baseline[Constants::nCh], peak[Constants::nCh],
             peaktime[Constants::nCh], charge[Constants::nCh], risingtime[Constants::nCh], fallingtime[Constants::nCh],
             peaknum[Constants::nCh];
@@ -93,6 +93,7 @@ int main(int argc, char *argv[])
         {
             if(word == "Event")
             {
+                chid_id = 0;
                 txt>>eventid;
                 txt>>word; txt>>word;
                 txt>>untime;
@@ -106,7 +107,8 @@ int main(int argc, char *argv[])
                 {
                     if(word=="CH:")
                     {
-                        txt>>chid; txt>>word; txt>>word;
+                        txt>>chid; chid = chid_id; chid_id++;
+                        txt>>word; txt>>word;
                         txt>>word; txt>>word;
                         txt>>word; txt>>baseline[chid];
                         txt>>word; txt>>peak[chid];
@@ -121,9 +123,11 @@ int main(int argc, char *argv[])
                           <<" | FallingTime: "<<fallingtime[chid]<<" | PeakNum: "<<peaknum[chid]<<endl;*/
 
                         for(pntid = 0; pntid < Constants::nPnt; pntid++)
+                        {
                             txt>>amplitude[chid][pntid];
+                        }
 
-                        if(chid == Constants::nCh - 1) break;
+                        if(chid >= Constants::nCh - 1) break;
                     }
                 }
             }

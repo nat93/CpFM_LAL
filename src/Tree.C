@@ -70,11 +70,11 @@ void Tree::VisualisationOnlyOneChannel(Int_t nEv,Int_t nChannel)
 
     TCanvas *viss = new TCanvas("viss","CpFM",1000,0,600,600);
 
-    Double_t t[Constants::nPnt], amp[Constants::nPnt];
+    Double_t t[Constants::nPnt], ampRaw[Constants::nPnt], amp[Constants::nPnt];
     for (Int_t i = 0; i < Constants::nPnt; i++)
     {
         t[i] = Constants::dTime*i;
-        amp[i] = (-1)*Amplitude[nChannel][i];
+        ampRaw[i] = (-1)*Amplitude[nChannel][i];
     }
     Double_t max_ampl;
     Double_t min_ampl;
@@ -90,7 +90,7 @@ void Tree::VisualisationOnlyOneChannel(Int_t nEv,Int_t nChannel)
     Double_t max_ampl_per_peak[Constants::nPeakMax];
     Double_t time_max_ampl_per_peak[Constants::nPeakMax];
 
-    GetMean(nChannel, mean_value_20p);
+    GetMean16(ampRaw, mean_value_20p,amp);
     GetMaxAmpl(amp, max_ampl, time_max_ampl);
     GetMinAmpl(amp, min_ampl, time_min_ampl);
     GetTimeAtLevel(amp, Constants::Level[nChannel], time_max_ampl, time_level);
@@ -267,25 +267,28 @@ void Tree::GetNumEntries(Long64_t &nEntires)
     nEntires = fChain->GetEntries();
 }
 
-
-void Tree::GetMean(Int_t nCh, Double_t &OutMean)
-{
-    Double_t sum = 0;
-    Double_t n = 0;
-
-    for (Int_t i = 0; i < 20; i++)
-    {
-        sum = sum + Amplitude[nCh][i];
-        n++;
-    }
-    OutMean = sum/n;
-}
-
 void Tree::TransformAmplitude(Int_t nCh, Double_t *OutAmpl)
 {
     for(Int_t i = 0; i < Constants::nPnt; i++)
     {
         OutAmpl[i] = (-1)*Amplitude[nCh][i];
+    }
+}
+
+void Tree::GetMean16(Double_t *InAmpl, Double_t &OutMean, Double_t *OutAmpl)
+{
+    Double_t sum = 0;
+    Double_t n = 0;
+
+    for (Int_t i = 0; i < 16; i++)
+    {
+        sum = sum + InAmpl[i];
+        n++;
+    }
+    OutMean = sum/n;
+    for (Int_t i = 0; i < Constants::nPnt; i++)
+    {
+        OutAmpl[i] = InAmpl[i] - OutMean;
     }
 }
 

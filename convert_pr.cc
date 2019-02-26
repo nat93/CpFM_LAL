@@ -39,7 +39,7 @@ int main(int argc, char *argv[])
     Double_t tdc;
     Double_t max_ampl[Constants::nCh];
     Double_t min_ampl[Constants::nCh];
-    Double_t mean_value_20p[Constants::nCh];
+    Double_t mean_value_16p[Constants::nCh];
     Double_t time_max_ampl[Constants::nCh];
     Double_t time_min_ampl[Constants::nCh];
     Double_t time_level[Constants::nCh];
@@ -61,7 +61,7 @@ int main(int argc, char *argv[])
     TString untime_ss           = "untime/D";
     TString max_ampl_ss         = "max_ampl[";
     TString min_ampl_ss         = "min_ampl[";
-    TString mean_value_ss       = "mean_value_20p[";
+    TString mean_value_ss       = "mean_value_16p[";
     TString time_max_ampl_ss    = "time_max_ampl[";
     TString time_min_ampl_ss    = "time_min_ampl[";
     TString time_level_ss       = "time_level[";
@@ -137,7 +137,7 @@ int main(int argc, char *argv[])
     tree->Branch("TimeMinAmp", time_min_ampl, time_min_ampl_ss.Data());
     tree->Branch("TimeLevel", time_level, time_level_ss.Data());
     tree->Branch("WidthAtTimeCF", width_at_cft, width_at_cft_ss.Data());
-    tree->Branch("MeanValue20Points", mean_value_20p, mean_value_ss.Data());
+    tree->Branch("MeanValue16Points", mean_value_16p, mean_value_ss.Data());
     tree->Branch("TimeCF", time_cf, time_cf_ss.Data());
     tree->Branch("RiseTime", rise_time, rise_time_ss.Data());
     tree->Branch("FallTime", fall_time, fall_time_ss.Data());
@@ -159,7 +159,7 @@ int main(int argc, char *argv[])
         width_at_cft[i] = -999;
         time_level[i] = -999;
         time_cf[i] = -999;
-        mean_value_20p[i] = -999;
+        mean_value_16p[i] = -999;
         rise_time[i] = -999;
         fall_time[i] = -999;
         charge[i] = -999;
@@ -202,21 +202,22 @@ int main(int argc, char *argv[])
                 for(Int_t i = 0; i < Constants::nCh; i++)
                 {
                     txt>>chid;                                  //ChannelNb
-                    if(chid != i) {cout<<"--> ERROR: Wrong format of the input data!"<<endl; assert(0);}
+//                    if(chid != i) {cout<<"--> ERROR: Wrong format of the input data!"<<endl; assert(0);}//it was good for 2016
+                    chid = i;
                     txt>>word;                                  //ChannelName
                     txt>>word;                                  //EventID
-                    txt>>mean_value_20p[chid];                  //MeasuredBaseline[Volts]
-                    mean_value_20p[chid] = (-1)*mean_value_20p[chid];
+                    txt>>mean_value_16p[chid];                  //MeasuredBaseline[Volts]
+                    mean_value_16p[chid]    = (-1)*mean_value_16p[chid];
                     txt>>max_ampl[chid];                        //Amplitude[Volts]
-                    max_ampl[chid] = (-1)*max_ampl[chid];
+                    max_ampl[chid]          = (-1)*max_ampl[chid];
                     txt>>time_max_ampl[chid];                   //PeakTime[ns]
                     txt>>charge[chid];                          //Charge[pC]
-                    charge[chid] = (-1)*charge[chid];
+                    charge[chid]            = (-1)*charge[chid];
                     txt>>LeadingEdgeTime;                       //LeadingEdgeTime[ns]
                     txt>>TrailingEdgeTime;                      //TrailingEdgeTime[ns]
-                    width_at_cft[chid] = LeadingEdgeTime - TrailingEdgeTime;
-                    time_level[chid] = TrailingEdgeTime;
-                    time_cf[chid] = TrailingEdgeTime;
+                    width_at_cft[chid]      = LeadingEdgeTime - TrailingEdgeTime;
+                    time_level[chid]        = TrailingEdgeTime;
+                    time_cf[chid]           = TrailingEdgeTime;
                     txt>>num_peaks[chid];                       //Peaks[count]
                 }
             }

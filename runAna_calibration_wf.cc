@@ -41,7 +41,7 @@ int main(int argc, char *argv[])
     Double_t tdc;
     Double_t max_ampl[Constants::nCh];
     Double_t min_ampl[Constants::nCh];
-    Double_t mean_value_20p[Constants::nCh];
+    Double_t mean_value_16p[Constants::nCh];
     Double_t time_max_ampl[Constants::nCh];
     Double_t time_min_ampl[Constants::nCh];
     Double_t time_level[Constants::nCh];
@@ -71,7 +71,7 @@ int main(int argc, char *argv[])
     fChain1->SetBranchAddress("TimeMinAmp",             time_min_ampl);
     fChain1->SetBranchAddress("TimeLevel",              time_level);
     fChain1->SetBranchAddress("WidthAtTimeCF",          width_at_level);
-    fChain1->SetBranchAddress("MeanValue20Points",      mean_value_20p);
+    fChain1->SetBranchAddress("MeanValue16Points",      mean_value_16p);
     fChain1->SetBranchAddress("TimeCF",                 time_cf);
     fChain1->SetBranchAddress("RiseTime",               rise_time);
     fChain1->SetBranchAddress("FallTime",               fall_time);
@@ -113,12 +113,6 @@ int main(int argc, char *argv[])
     for(Int_t eventID = 0; eventID < nEntries; eventID++)
     {
         fChain1->GetEntry(eventID);
-
-        for(Int_t i = 0; i < Constants::nCh; i++)
-        {
-            charge[i]   = charge[i] - mean_value_20p[i]*Constants::dTime*Constants::nPnt;
-            max_ampl[i] = max_ampl[i] - mean_value_20p[i];
-        }
 
         if(eventID%1000 == 0)
         {

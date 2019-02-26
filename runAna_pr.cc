@@ -62,7 +62,22 @@ int main(int argc, char *argv[])
 
 void function_1()
 {
-    TString input_file_name     = "/media/andrii/F492773C92770302/CpfmData/ROOT_FILES/output2_pr_2016_10_18.root";
+    //=======================================//
+    // 2016_10_18
+//    TString input_file_name     = "/media/andrii/F492773C92770302/CpfmData/ROOT_FILES/output2_pr_2016_10_18.root";
+    // Linear Scan
+//    Long64_t minUnixTime_run = 1476787800000000;
+//    Long64_t maxUnixTime_run = 1476793500000000;
+    //=======================================//
+
+    //=======================================//
+    // 2018_09_17
+    TString input_file_name     = "/media/andrii/F492773C92770302/CpfmData/ROOT_FILES/output2_pr_2018_09_17.root";
+    // Fixed Position in Single CH
+    Long64_t minUnixTime_run = 1537187340000000;
+    Long64_t maxUnixTime_run = 1537188060000000;
+    //=======================================//
+
     TString output_file_name    = "./output/output_function_1.root";
 
     // Common
@@ -70,7 +85,7 @@ void function_1()
     Double_t tdc;
     Double_t max_ampl[Constants::nCh];
     Double_t min_ampl[Constants::nCh];
-    Double_t mean_value_20p[Constants::nCh];
+    Double_t mean_value_16p[Constants::nCh];
     Double_t time_max_ampl[Constants::nCh];
     Double_t time_min_ampl[Constants::nCh];
     Double_t time_level[Constants::nCh];
@@ -95,17 +110,13 @@ void function_1()
     fChain1->SetBranchAddress("TimeMinAmp",             time_min_ampl);
     fChain1->SetBranchAddress("TimeLevel",              time_level);
     fChain1->SetBranchAddress("WidthAtTimeCF",          width_at_level);
-    fChain1->SetBranchAddress("MeanValue20Points",      mean_value_20p);
+    fChain1->SetBranchAddress("MeanValue16Points",      mean_value_16p);
     fChain1->SetBranchAddress("TimeCF",                 time_cf);
     fChain1->SetBranchAddress("RiseTime",               rise_time);
     fChain1->SetBranchAddress("FallTime",               fall_time);
     fChain1->SetBranchAddress("Charge",                 charge);
     fChain1->SetBranchAddress("NumPeaks",               num_peaks);
     fChain1->SetBranchAddress("NumPeaksTrue",           num_peaks_true);
-
-    // Linear Scan
-    Long64_t minUnixTime_run = 1476787800000000;
-    Long64_t maxUnixTime_run = 1476793500000000;
 
     cout<<"--> Input file: "<<input_file_name<<endl;
     Double_t nEntries = fChain1->GetEntries();
@@ -114,24 +125,24 @@ void function_1()
     //--------------------------------------------------------------------------//
     //-------------------------------- HISTOS ----------------------------------//
     //--------------------------------------------------------------------------//
-    TH1D* h_1 = new TH1D("h_1","max_ampl CH[0]",2500,-0.5,2.0);
-    TH1D* h_2 = new TH1D("h_2","max_ampl CH[1]",2500,-0.5,2.0);
-    TH1D* h_3 = new TH1D("h_3","max_ampl CH[2]",2500,-0.5,2.0);
-    TH1D* h_4 = new TH1D("h_4","charge CH[0]",5000,0,50.0);
-    TH1D* h_5 = new TH1D("h_5","charge CH[1]",5000,0,50.0);
-    TH1D* h_6 = new TH1D("h_6","charge CH[2]",5000,0,50.0);
-    TH2D* h_7 = new TH2D("h_7","charge vs max_ampl CH[1]",2000,0,2.0,5000,0,50.0);
-    TH2D* h_8 = new TH2D("h_8","charge vs max_ampl CH[2]",2000,0,2.0,5000,0,50.0);
+    TH1D* h_1 = new TH1D("h_1","max_ampl CH[0]",3000,-0.5,2.5);
+    TH1D* h_2 = new TH1D("h_2","max_ampl CH[1]",3000,-0.5,2.5);
+    TH1D* h_3 = new TH1D("h_3","max_ampl CH[2]",3000,-0.5,2.5);
+    TH1D* h_4 = new TH1D("h_4","charge CH[0]",6000,-10,50.0);
+    TH1D* h_5 = new TH1D("h_5","charge CH[1]",6000,-10,50.0);
+    TH1D* h_6 = new TH1D("h_6","charge CH[2]",6000,-10,50.0);
+    TH2D* h_7 = new TH2D("h_7","charge vs max_ampl CH[1]",3000,-0.5,2.5,6000,-10,50.0);
+    TH2D* h_8 = new TH2D("h_8","charge vs max_ampl CH[2]",3000,-0.5,2.5,6000,-10,50.0);
     TH1D* h_9 = new TH1D("h_9","charge CH[1] (cut)",200000,-1000,1000.0);
     TH1D* h_10 = new TH1D("h_10","charge CH[2] (cut)",200000,-1000,1000.0);
-    TH2D* h_11 = new TH2D("h_11","charge vs max_ampl CH[1] (cut)",2000,0,2.0,5000,0,50.0);
-    TH2D* h_12 = new TH2D("h_12","charge vs max_ampl CH[2] (cut)",2000,0,2.0,5000,0,50.0);
-    TH2D* h_13 = new TH2D("h_13","max_ampl CH[1] vs max_ampl CH[2]",2000,0,2.0,2000,0,2.0);
-    TH2D* h_14 = new TH2D("h_14","charge CH[1] vs charge CH[2]",5000,0,50.0,5000,0,50.0);
-    TH1D* h_15 = new TH1D("h_15","max_ampl CH[1] (cut)",2500,-0.5,2.0);
-    TH1D* h_16 = new TH1D("h_16","max_ampl CH[2] (cut)",2500,-0.5,2.0);
-    TH1D* h_17 = new TH1D("h_17","max_ampl CH[1] (cut2)",2500,-0.5,2.0);
-    TH1D* h_18 = new TH1D("h_18","max_ampl CH[2] (cut2)",2500,-0.5,2.0);
+    TH2D* h_11 = new TH2D("h_11","charge vs max_ampl CH[1] (cut)",3000,-0.5,2.5,6000,-10,50.0);
+    TH2D* h_12 = new TH2D("h_12","charge vs max_ampl CH[2] (cut)",3000,-0.5,2.5,6000,-10,50.0);
+    TH2D* h_13 = new TH2D("h_13","max_ampl CH[1] vs max_ampl CH[2]",3000,-0.5,2.5,3000,-0.5,2.5);
+    TH2D* h_14 = new TH2D("h_14","charge CH[1] vs charge CH[2]",6000,-10,50.0,6000,-10,50.0);
+    TH1D* h_15 = new TH1D("h_15","max_ampl CH[1] (cut)",3000,-0.5,2.5);
+    TH1D* h_16 = new TH1D("h_16","max_ampl CH[2] (cut)",3000,-0.5,2.5);
+    TH1D* h_17 = new TH1D("h_17","max_ampl CH[1] (cut2)",3000,-0.5,2.5);
+    TH1D* h_18 = new TH1D("h_18","max_ampl CH[2] (cut2)",3000,-0.5,2.5);
     //--------------------------------------------------------------------------//
 
     for(Int_t eventID = 0; eventID < nEntries; eventID++)
@@ -140,8 +151,7 @@ void function_1()
 
         for(Int_t i = 0; i < Constants::nCh; i++)
         {
-            charge[i]   = charge[i]*Constants::pCtoAu - mean_value_20p[i]*Constants::ChargeLength;
-            max_ampl[i] = max_ampl[i] - mean_value_20p[i];
+            charge[i]   = charge[i]*Constants::pCtoAu;
         }
 
         if(eventID%1000 == 0)
@@ -236,7 +246,7 @@ void function_2()
     Double_t tdc;
     Double_t max_ampl[Constants::nCh];
     Double_t min_ampl[Constants::nCh];
-    Double_t mean_value_20p[Constants::nCh];
+    Double_t mean_value_16p[Constants::nCh];
     Double_t time_max_ampl[Constants::nCh];
     Double_t time_min_ampl[Constants::nCh];
     Double_t time_level[Constants::nCh];
@@ -261,7 +271,7 @@ void function_2()
     fChain1->SetBranchAddress("TimeMinAmp",             time_min_ampl);
     fChain1->SetBranchAddress("TimeLevel",              time_level);
     fChain1->SetBranchAddress("WidthAtTimeCF",          width_at_level);
-    fChain1->SetBranchAddress("MeanValue20Points",      mean_value_20p);
+    fChain1->SetBranchAddress("MeanValue16Points",      mean_value_16p);
     fChain1->SetBranchAddress("TimeCF",                 time_cf);
     fChain1->SetBranchAddress("RiseTime",               rise_time);
     fChain1->SetBranchAddress("FallTime",               fall_time);
@@ -312,28 +322,28 @@ void function_2()
     //--------------------------------------------------------------------------//
     //-------------------------------- HISTOS ----------------------------------//
     //--------------------------------------------------------------------------//
-    TH1D* h_1 = new TH1D("h_1","max_ampl CH[0]",2500,-0.5,2.0);
-    TH1D* h_2 = new TH1D("h_2","max_ampl CH[1]",2500,-0.5,2.0);
-    TH1D* h_3 = new TH1D("h_3","max_ampl CH[2]",2500,-0.5,2.0);
-    TH1D* h_4 = new TH1D("h_4","charge CH[0]",5000,0,50.0);
-    TH1D* h_5 = new TH1D("h_5","charge CH[1]",5000,0,50.0);
-    TH1D* h_6 = new TH1D("h_6","charge CH[2]",5000,0,50.0);
-    TH2D* h_7 = new TH2D("h_7","charge vs max_ampl CH[1]",2000,0,2.0,5000,0,50.0);
-    TH2D* h_8 = new TH2D("h_8","charge vs max_ampl CH[2]",2000,0,2.0,5000,0,50.0);
+    TH1D* h_1 = new TH1D("h_1","max_ampl CH[0]",3000,-0.5,2.5);
+    TH1D* h_2 = new TH1D("h_2","max_ampl CH[1]",3000,-0.5,2.5);
+    TH1D* h_3 = new TH1D("h_3","max_ampl CH[2]",3000,-0.5,2.5);
+    TH1D* h_4 = new TH1D("h_4","charge CH[0]",6000,-10,50.0);
+    TH1D* h_5 = new TH1D("h_5","charge CH[1]",6000,-10,50.0);
+    TH1D* h_6 = new TH1D("h_6","charge CH[2]",6000,-10,50.0);
+    TH2D* h_7 = new TH2D("h_7","charge vs max_ampl CH[1]",3000,-0.5,2.5,6000,-10,50.0);
+    TH2D* h_8 = new TH2D("h_8","charge vs max_ampl CH[2]",3000,-0.5,2.5,6000,-10,50.0);
     TH1D* h_9 = new TH1D("h_9","charge CH[1] (cut)",200000,-1000,1000.0);
     TH1D* h_10 = new TH1D("h_10","charge CH[2] (cut)",200000,-1000,1000.0);
-    TH2D* h_11 = new TH2D("h_11","charge vs max_ampl CH[1] (cut)",2000,0,2.0,5000,0,50.0);
-    TH2D* h_12 = new TH2D("h_12","charge vs max_ampl CH[2] (cut)",2000,0,2.0,5000,0,50.0);
-    TH2D* h_13 = new TH2D("h_13","max_ampl CH[1] vs max_ampl CH[2]",2000,0,2.0,2000,0,2.0);
-    TH2D* h_14 = new TH2D("h_14","charge CH[1] vs charge CH[2]",5000,0,50.0,5000,0,50.0);
-    TH1D* h_15 = new TH1D("h_15","max_ampl CH[1] (cut)",2500,-0.5,2.0);
-    TH1D* h_16 = new TH1D("h_16","max_ampl CH[2] (cut)",2500,-0.5,2.0);
-    TH1D* h_17 = new TH1D("h_17","max_ampl CH[1] (cut2)",2500,-0.5,2.0);
-    TH1D* h_18 = new TH1D("h_18","max_ampl CH[2] (cut2)",2500,-0.5,2.0);
+    TH2D* h_11 = new TH2D("h_11","charge vs max_ampl CH[1] (cut)",3000,-0.5,2.5,6000,-10,50.0);
+    TH2D* h_12 = new TH2D("h_12","charge vs max_ampl CH[2] (cut)",3000,-0.5,2.5,6000,-10,50.0);
+    TH2D* h_13 = new TH2D("h_13","max_ampl CH[1] vs max_ampl CH[2]",3000,-0.5,2.5,3000,-0.5,2.5);
+    TH2D* h_14 = new TH2D("h_14","charge CH[1] vs charge CH[2]",6000,-10,50.0,6000,-10,50.0);
+    TH1D* h_15 = new TH1D("h_15","max_ampl CH[1] (cut)",3000,-0.5,2.5);
+    TH1D* h_16 = new TH1D("h_16","max_ampl CH[2] (cut)",3000,-0.5,2.5);
+    TH1D* h_17 = new TH1D("h_17","max_ampl CH[1] (cut2)",3000,-0.5,2.5);
+    TH1D* h_18 = new TH1D("h_18","max_ampl CH[2] (cut2)",3000,-0.5,2.5);
     //--------------------------------------------------------------------------//
-    TH2D* hh_1 = new TH2D("hh_1","Amplitude vs UnixTime CH[0]",(maxUnixTime_run-minUnixTime_run),minUnixTime_run,maxUnixTime_run,2500,-0.5,2.0);
-    TH2D* hh_2 = new TH2D("hh_2","Amplitude vs UnixTime CH[1]",(maxUnixTime_run-minUnixTime_run),minUnixTime_run,maxUnixTime_run,2500,-0.5,2.0);
-    TH2D* hh_3 = new TH2D("hh_3","Amplitude vs UnixTime CH[2]",(maxUnixTime_run-minUnixTime_run),minUnixTime_run,maxUnixTime_run,2500,-0.5,2.0);
+    TH2D* hh_1 = new TH2D("hh_1","Amplitude vs UnixTime CH[0]",(maxUnixTime_run-minUnixTime_run),minUnixTime_run,maxUnixTime_run,3000,-0.5,2.5);
+    TH2D* hh_2 = new TH2D("hh_2","Amplitude vs UnixTime CH[1]",(maxUnixTime_run-minUnixTime_run),minUnixTime_run,maxUnixTime_run,3000,-0.5,2.5);
+    TH2D* hh_3 = new TH2D("hh_3","Amplitude vs UnixTime CH[2]",(maxUnixTime_run-minUnixTime_run),minUnixTime_run,maxUnixTime_run,3000,-0.5,2.5);
     TH2D* hh_4 = new TH2D("hh_4","Charge vs UnixTime CH[0]",(maxUnixTime_run-minUnixTime_run),minUnixTime_run,maxUnixTime_run,6000,-10,50.0);
     TH2D* hh_5 = new TH2D("hh_5","Charge vs UnixTime CH[1]",(maxUnixTime_run-minUnixTime_run),minUnixTime_run,maxUnixTime_run,6000,-10,50.0);
     TH2D* hh_6 = new TH2D("hh_6","Charge vs UnixTime CH[2]",(maxUnixTime_run-minUnixTime_run),minUnixTime_run,maxUnixTime_run,6000,-10,50.0);
@@ -342,9 +352,9 @@ void function_2()
     TH2D* hh_9 = new TH2D("hh_9","Rate vs UnixTime CH[2]",(maxUnixTime_run-minUnixTime_run),minUnixTime_run,maxUnixTime_run,10000,0,1e7);
     TH2D* hh_10 = new TH2D("hh_10","Position vs UnixTime CH[0]",(maxUnixTime_run-minUnixTime_run),minUnixTime_run,maxUnixTime_run,10000,0,100);
 
-    TH2D* hh_11 = new TH2D("hh_11","Amplitude vs Position CH[0]",10000,0,100,2500,-0.5,2.0);
-    TH2D* hh_12 = new TH2D("hh_12","Amplitude vs Position CH[1]",10000,0,100,2500,-0.5,2.0);
-    TH2D* hh_13 = new TH2D("hh_13","Amplitude vs Position CH[2]",10000,0,100,2500,-0.5,2.0);
+    TH2D* hh_11 = new TH2D("hh_11","Amplitude vs Position CH[0]",10000,0,100,3000,-0.5,2.5);
+    TH2D* hh_12 = new TH2D("hh_12","Amplitude vs Position CH[1]",10000,0,100,3000,-0.5,2.5);
+    TH2D* hh_13 = new TH2D("hh_13","Amplitude vs Position CH[2]",10000,0,100,3000,-0.5,2.5);
     TH2D* hh_14 = new TH2D("hh_14","Charge vs Position CH[0]",10000,0,100,6000,-10,50.0);
     TH2D* hh_15 = new TH2D("hh_15","Charge vs Position CH[1]",10000,0,100,6000,-10,50.0);
     TH2D* hh_16 = new TH2D("hh_16","Charge vs Position CH[2]",10000,0,100,6000,-10,50.0);
@@ -407,8 +417,8 @@ void function_2()
 
         for(Int_t i = 0; i < Constants::nCh; i++)
         {
-            charge[i]   = charge[i]*Constants::pCtoAu - mean_value_20p[i]*Constants::ChargeLength;
-            max_ampl[i] = max_ampl[i] - mean_value_20p[i];
+            charge[i]   = charge[i]*Constants::pCtoAu - mean_value_16p[i]*Constants::ChargeLength;
+            max_ampl[i] = max_ampl[i] - mean_value_16p[i];
         }
         untime = untime/1000000.0;
 
