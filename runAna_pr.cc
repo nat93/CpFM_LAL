@@ -64,19 +64,28 @@ void function_1()
 {
     //=======================================//
     // 2016_10_18
-//    TString input_file_name     = "/media/andrii/F492773C92770302/CpfmData/ROOT_FILES/output2_pr_2016_10_18.root";
+    TString input_file_name     = "/media/andrii/F492773C92770302/CpfmData/ROOT_FILES/output2_pr_2016_10_18.root";
     // Linear Scan
-//    Long64_t minUnixTime_run = 1476787800000000;
-//    Long64_t maxUnixTime_run = 1476793500000000;
+    Long64_t minUnixTime_run = 1476787800000000;
+    Long64_t maxUnixTime_run = 1476793500000000;
     //=======================================//
 
     //=======================================//
     // 2018_09_17
-    TString input_file_name     = "/media/andrii/F492773C92770302/CpfmData/ROOT_FILES/output2_pr_2018_09_17.root";
+//    TString input_file_name     = "/media/andrii/F492773C92770302/CpfmData/ROOT_FILES/output2_pr_2018_09_17.root";
     // Fixed Position in Single CH
-    Long64_t minUnixTime_run = 1537187340000000;
-    Long64_t maxUnixTime_run = 1537188060000000;
-    //=======================================//
+    //== PMT HV 700 V ==//
+//    Long64_t minUnixTime_run = 1537188840000000;
+//    Long64_t maxUnixTime_run = 1537189800000000;
+    //== PMT HV 750 V ==//
+//    Long64_t minUnixTime_run = 1537204800000000;
+//    Long64_t maxUnixTime_run = 1537205400000000;
+    //== PMT HV 800 V ==//
+//    Long64_t minUnixTime_run = 1537187340000000;
+//    Long64_t maxUnixTime_run = 1537188060000000;
+    //== PMT HV 900 V ==//
+//    Long64_t minUnixTime_run = 1537188300000000;
+//    Long64_t maxUnixTime_run = 1537188780000000;
 
     TString output_file_name    = "./output/output_function_1.root";
 
@@ -192,7 +201,7 @@ void function_1()
             h_13->Fill(max_ampl[2],max_ampl[1]);
             h_14->Fill(charge[2],charge[1]);
 
-            if(charge[1] < 0.0395+3.0*0.0247)
+            if(charge[1] < 2.6+5.0*0.12)
             {
                 h_17->Fill(max_ampl[1]);
             }
@@ -240,6 +249,11 @@ void function_2()
     TString input_file_rate     = "/media/andrii/F492773C92770302/CpfmData/ROOT_FILES/output2_rt_2016_10_18.root";
     TString input_file_motor    = "cpfm_linear_scan_1.root";
     TString output_file_name    = "./output/output_function_2.root";
+
+    const Double_t ampl_cpfm1_pro       = 0.990e-3;
+    const Double_t ampl_cpfm2_pro       = 2.910e-3;
+    const Double_t char_cpfm1_pro       = 0.005;
+    const Double_t char_cpfm2_pro       = 0.018;
 
     // Measurements
     Double_t untime;
@@ -372,6 +386,13 @@ void function_2()
     TProfile* hprof_8  = new TProfile("hprof_8","Profile of Rate vs Position CH[1]",10000,0,100,0,1e7);
     TProfile* hprof_9  = new TProfile("hprof_9","Profile of Rate vs Position CH[2]",10000,0,100,0,1e7);
 
+    TH1D* h_19 = new TH1D("h_19","max_ampl CH[1] (70-72cm)",3000,-0.5,2.5);
+    TH1D* h_20 = new TH1D("h_20","max_ampl CH[2] (75-77cm)",3000,-0.5,2.5);
+    TH1D* h_21 = new TH1D("h_21","num max_ampl CH[1] (70-72cm & cut)",1010,-10,1000);
+    TH1D* h_22 = new TH1D("h_22","num max_ampl CH[2] (75-77cm & cut)",1010,-10,1000);
+    TH1D* h_23 = new TH1D("h_23","num charge CH[1] (70-72cm & cut)",1010,-10,1000);
+    TH1D* h_24 = new TH1D("h_24","num charge CH[2] (75-77cm & cut)",1010,-10,1000);
+
     TGraphErrors* gr_0 = new TGraphErrors();
     gr_0->SetName("gr_0");
     gr_0->SetTitle("Position");
@@ -417,8 +438,7 @@ void function_2()
 
         for(Int_t i = 0; i < Constants::nCh; i++)
         {
-            charge[i]   = charge[i]*Constants::pCtoAu - mean_value_16p[i]*Constants::ChargeLength;
-            max_ampl[i] = max_ampl[i] - mean_value_16p[i];
+            charge[i]   = charge[i]*Constants::pCtoAu;
         }
         untime = untime/1000000.0;
 
@@ -512,6 +532,25 @@ void function_2()
             {
                 h_18->Fill(max_ampl[2]);
             }
+
+            if(position > 70.0 && position < 72.0)
+            {
+                h_19->Fill(max_ampl[1]);
+                if(max_ampl[1] > 6.0e-3)
+                {
+                    h_21->Fill(max_ampl[1]/ampl_cpfm1_pro);
+                    h_23->Fill(charge[1]/char_cpfm1_pro);
+                }
+            }
+            if(position > 75.0 && position < 77.0)
+            {
+                h_20->Fill(max_ampl[2]);
+                if(max_ampl[2] > 6.0e-3)
+                {
+                    h_22->Fill(max_ampl[2]/ampl_cpfm2_pro);
+                    h_24->Fill(charge[2]/char_cpfm2_pro);
+                }
+            }
         }
     }
     cout<<endl;
@@ -540,6 +579,12 @@ void function_2()
     h_16->Write();
     h_17->Write();
     h_18->Write();
+    h_19->Write();
+    h_20->Write();
+    h_21->Write();
+    h_22->Write();
+    h_23->Write();
+    h_24->Write();
 
     hh_1->Write();
     hh_2->Write();
@@ -582,12 +627,12 @@ void function_3()
 
     const Double_t ampl_cpfm1_pro       = 0.990e-3;
     const Double_t ampl_cpfm1_pro_err   = 0.001e-3;
-    const Double_t ampl_cpfm2_pro       = 2.909e-3;
+    const Double_t ampl_cpfm2_pro       = 2.910e-3;
     const Double_t ampl_cpfm2_pro_err   = 0.001e-3;
 
     const Double_t char_cpfm1_pro       = 0.005;
     const Double_t char_cpfm1_pro_err   = 3.6e-6;
-    const Double_t char_cpfm2_pro       = 0.019;
+    const Double_t char_cpfm2_pro       = 0.018;
     const Double_t char_cpfm2_pro_err   = 5.9e-6;
 
     const Double_t sps_rate             = 43000.0; // [Hz]

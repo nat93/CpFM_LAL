@@ -17,7 +17,7 @@ namespace Constants
     static const double posMaxLim           = 71.4; //mm
     static const double posMinLim           = 69.0; //mm
     static const double ChargeLength        = 6*16*dTime;
-    static const double pCtoAu              = (12.0216-0.00034*nPnt)/62408.6; // from USBWC pC to a.u. of the waveform analysis
+    static const double pCtoAu              = (1.19179e+01)/(6.23137e+04); // from USBWC pC to a.u. of the waveform analysis
 }
 
 #endif

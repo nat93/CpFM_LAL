@@ -101,7 +101,7 @@ int main(int argc, char *argv[])
                 txt>>word; txt>>word; txt>>word;
                 txt>>tdc;
 
-                //cout<<"--> EventID: "<<eventid<<" | UnixTime: "<<untime<<" | TDC: "<<tdc<<endl;
+//                cout<<"--> EventID: "<<eventid<<" | UnixTime: "<<untime<<" | TDC: "<<tdc<<endl;
 
                 while(txt>>word)
                 {
