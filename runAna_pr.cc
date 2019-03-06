@@ -64,15 +64,15 @@ void function_1()
 {
     //=======================================//
     // 2016_10_18
-    TString input_file_name     = "/media/andrii/F492773C92770302/CpfmData/ROOT_FILES/output2_pr_2016_10_18.root";
+//    TString input_file_name     = "/media/andrii/F492773C92770302/CpfmData/ROOT_FILES/output2_pr_2016_10_18.root";
     // Linear Scan
-    Long64_t minUnixTime_run = 1476787800000000;
-    Long64_t maxUnixTime_run = 1476793500000000;
+//    Long64_t minUnixTime_run = 1476787800000000;
+//    Long64_t maxUnixTime_run = 1476793500000000;
     //=======================================//
 
     //=======================================//
     // 2018_09_17
-//    TString input_file_name     = "/media/andrii/F492773C92770302/CpfmData/ROOT_FILES/output2_pr_2018_09_17.root";
+    TString input_file_name     = "/media/andrii/F492773C92770302/CpfmData/ROOT_FILES/output2_pr_2018_09_17.root";
     // Fixed Position in Single CH
     //== PMT HV 700 V ==//
 //    Long64_t minUnixTime_run = 1537188840000000;
@@ -86,6 +86,29 @@ void function_1()
     //== PMT HV 900 V ==//
 //    Long64_t minUnixTime_run = 1537188300000000;
 //    Long64_t maxUnixTime_run = 1537188780000000;
+    // Parking Position
+    Long64_t minUnixTime_run = 1537190700000000;
+    Long64_t maxUnixTime_run = 1537191900000000;
+    //=======================================//
+
+    //=======================================//
+    // 2017_05_30
+//    TString input_file_name     = "/media/andrii/F492773C92770302/CpfmData/ROOT_FILES/output2_pr_2017_05_30.root";
+    // Parking Position
+//    Long64_t minUnixTime_run = 1496151420000000;
+//    Long64_t maxUnixTime_run = 1496153220000000;
+    //=======================================//
+
+    //=======================================//
+    // 2017_09_18
+//    TString input_file_name     = "/media/andrii/F492773C92770302/CpfmData/ROOT_FILES/output2_pr_2017_09_18.root";
+    // Parking Position
+//    Long64_t minUnixTime_run = 1505715000000000;
+//    Long64_t maxUnixTime_run = 1505718000000000;
+    // LHC coll scan
+//    Long64_t minUnixTime_run = 1505768040000000;
+//    Long64_t maxUnixTime_run = 1505768700000000;
+    //=======================================//
 
     TString output_file_name    = "./output/output_function_1.root";
 
@@ -152,7 +175,12 @@ void function_1()
     TH1D* h_16 = new TH1D("h_16","max_ampl CH[2] (cut)",3000,-0.5,2.5);
     TH1D* h_17 = new TH1D("h_17","max_ampl CH[1] (cut2)",3000,-0.5,2.5);
     TH1D* h_18 = new TH1D("h_18","max_ampl CH[2] (cut2)",3000,-0.5,2.5);
+    TH1D* h_19 = new TH1D("h_19","num max_ampl CH[1]",1010000,-10,1000);
+    TH1D* h_20 = new TH1D("h_20","num charge CH[1]",1010000,-10,1000);
     //--------------------------------------------------------------------------//
+
+    const Double_t ampl_cpfm1_pro       = 18.294e-3;
+    const Double_t char_cpfm1_pro       = 0.149;
 
     for(Int_t eventID = 0; eventID < nEntries; eventID++)
     {
@@ -189,7 +217,9 @@ void function_1()
                 h_9->Fill(charge[1]);
                 h_11->Fill(max_ampl[1],charge[1]);
                 h_15->Fill(max_ampl[1]);
-            }
+                h_19->Fill(max_ampl[1]/ampl_cpfm1_pro);
+                h_20->Fill(charge[1]/char_cpfm1_pro);
+            }            
 
             if(max_ampl[2] > 6.0e-3)
             {
@@ -238,6 +268,8 @@ void function_1()
     h_16->Write();
     h_17->Write();
     h_18->Write();
+    h_19->Write();
+    h_20->Write();
 
     file->Write();
     //--------------------------------------------------------------------------//

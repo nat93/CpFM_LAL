@@ -152,26 +152,26 @@ int main(int argc, char *argv[])
 
     for (Int_t i = 0; i < Constants::nCh; i++)
     {
-        max_ampl[i] = -999;
-        min_ampl[i] = -999;
-        time_max_ampl[i] = -999;
-        time_min_ampl[i] = -999;
-        width_at_cft[i] = -999;
-        time_level[i] = -999;
-        time_cf[i] = -999;
-        mean_value_16p[i] = -999;
-        rise_time[i] = -999;
-        fall_time[i] = -999;
-        charge[i] = -999;
-        num_peaks[i] = -999;
-        num_peaks_true[i] = -999;
+        max_ampl[i]         = -999;
+        min_ampl[i]         = -999;
+        time_max_ampl[i]    = -999;
+        time_min_ampl[i]    = -999;
+        width_at_cft[i]     = -999;
+        time_level[i]       = -999;
+        time_cf[i]          = -999;
+        mean_value_16p[i]   = -999;
+        rise_time[i]        = -999;
+        fall_time[i]        = -999;
+        charge[i]           = -999;
+        num_peaks[i]        = -999;
+        num_peaks_true[i]   = -999;
 
         for(Int_t j = 0; j < Constants::nPeakMax; j++)
         {
-            max_ampl_per_peak[i][j] = -999;
-            time_max_ampl_per_peak[i][j] = -999;
-            width_at_cft_per_peak[i][j] = -999;
-            time_level_per_peak[i][j] = -999;
+            max_ampl_per_peak[i][j]         = -999;
+            time_max_ampl_per_peak[i][j]    = -999;
+            width_at_cft_per_peak[i][j]     = -999;
+            time_level_per_peak[i][j]       = -999;
         }
     }
 

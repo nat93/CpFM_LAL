@@ -180,6 +180,12 @@ int main(int argc, char *argv[])
     for(Int_t eventID_iter = 0; eventID_iter < nEvents; eventID_iter++)
     {
         pointer.fChain->GetEntry(eventID_iter);
+        if(eventID_iter%1000 == 0)
+        {
+            printf("\r--> Working: %3.1f %%",100*(Double_t)eventID_iter/nEvents);
+            fflush(stdout);
+        }
+//        if(pointer.UnixTime<1496160000000000) continue;
         for(Int_t channelID = 0; channelID < Constants::nCh; channelID++)
         {
             // Common
@@ -203,6 +209,7 @@ int main(int argc, char *argv[])
                 pointer.GetTimeAtLevelPerPeak(Amplitude, Constants::Level[channelID], time_level_per_peak[channelID]);
                 pointer.GetWidthPerPeak(Amplitude, Constants::CF[channelID]*max_ampl[channelID],width_at_cft_per_peak[channelID]);
             }
+//            if(max_ampl[1] > 0.05 && max_ampl[2] > 0.05)cout<<endl<<eventID_iter<<endl;
         }
         untime = pointer.UnixTime;
         tdc = pointer.TDC;
@@ -236,12 +243,7 @@ int main(int argc, char *argv[])
                 time_level_per_peak[i][j]       = -999;
             }
         }
-        eventid = -999;
-        if(eventID_iter%1000 == 0)
-        {
-            printf("\r--> Working: %3.1f %%",100*(Double_t)eventID_iter/nEvents);
-            fflush(stdout);
-        }
+        eventid = -999;        
     }
     cout<<endl;
     file->Write();

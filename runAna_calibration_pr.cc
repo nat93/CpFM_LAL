@@ -84,8 +84,11 @@ int main(int argc, char *argv[])
     fChain1->SetBranchAddress("TimeLevelPerPeak",       time_level_per_peak);
     fChain1->SetBranchAddress("WidthAtTimeCFPerPeak",   width_at_level_per_peak);
 
-    Long64_t minUnixTime_run = 1479948000000000;//24 November 2016 01:40:00
-    Long64_t maxUnixTime_run = 1479957600000000;//24 November 2016 04:20:00
+//    Long64_t minUnixTime_run = 1479948000000000;//24 November 2016 01:40:00
+//    Long64_t maxUnixTime_run = 1479957600000000;//24 November 2016 04:20:00
+
+    Long64_t minUnixTime_run = 1513131000000000;//13/12/2017 03:10:00
+    Long64_t maxUnixTime_run = 1513143600000000;//13/12/2017 06:40:00
 
     cout<<"--> Input file: "<<argv[1]<<endl;
     Double_t nEntries = fChain1->GetEntries();
@@ -94,20 +97,20 @@ int main(int argc, char *argv[])
     //--------------------------------------------------------------------------//
     //-------------------------------- HISTOS ----------------------------------//
     //--------------------------------------------------------------------------//
-    TH1D* h_1 = new TH1D("h_1","max_ampl CH[0]",2000,0,2.0);
-    TH1D* h_2 = new TH1D("h_2","max_ampl CH[1]",2000,0,2.0);
-    TH1D* h_3 = new TH1D("h_3","max_ampl CH[2]",2000,0,2.0);
-    TH1D* h_4 = new TH1D("h_4","charge CH[0]",5000,0,50.0);
-    TH1D* h_5 = new TH1D("h_5","charge CH[1]",5000,0,50.0);
-    TH1D* h_6 = new TH1D("h_6","charge CH[2]",5000,0,50.0);
-    TH2D* h_7 = new TH2D("h_7","charge vs max_ampl CH[1]",2000,0,2.0,5000,0,50.0);
-    TH2D* h_8 = new TH2D("h_8","charge vs max_ampl CH[2]",2000,0,2.0,5000,0,50.0);
-    TH1D* h_9 = new TH1D("h_9","charge CH[1] (cut)",5000,0,50.0);
-    TH1D* h_10 = new TH1D("h_10","charge CH[2] (cut)",5000,0,50.0);
-    TH2D* h_11 = new TH2D("h_11","charge vs max_ampl CH[1] (cut)",2000,0,2.0,5000,0,50.0);
-    TH2D* h_12 = new TH2D("h_12","charge vs max_ampl CH[2] (cut)",2000,0,2.0,5000,0,50.0);
+    TH1D* h_1 = new TH1D("h_1","max_ampl CH[0]",20000,0,2.0);
+    TH1D* h_2 = new TH1D("h_2","max_ampl CH[1]",20000,0,2.0);
+    TH1D* h_3 = new TH1D("h_3","max_ampl CH[2]",20000,0,2.0);
+    TH1D* h_4 = new TH1D("h_4","charge CH[0]",60000,-10,50.0);
+    TH1D* h_5 = new TH1D("h_5","charge CH[1]",60000,-10,50.0);
+    TH1D* h_6 = new TH1D("h_6","charge CH[2]",60000,-10,50.0);
+    TH2D* h_7 = new TH2D("h_7","charge vs max_ampl CH[1]",2000,0,2.0,6000,-10,50.0);
+    TH2D* h_8 = new TH2D("h_8","charge vs max_ampl CH[2]",2000,0,2.0,6000,-10,50.0);
+    TH1D* h_9 = new TH1D("h_9","charge CH[1] (cut)",60000,-10,50.0);
+    TH1D* h_10 = new TH1D("h_10","charge CH[2] (cut)",60000,-10,50.0);
+    TH2D* h_11 = new TH2D("h_11","charge vs max_ampl CH[1] (cut)",2000,0,2.0,6000,-10,50.0);
+    TH2D* h_12 = new TH2D("h_12","charge vs max_ampl CH[2] (cut)",2000,0,2.0,6000,-10,50.0);
     TH2D* h_13 = new TH2D("h_13","max_ampl CH[1] vs max_ampl CH[2]",2000,0,2.0,2000,0,2.0);
-    TH2D* h_14 = new TH2D("h_14","charge CH[1] vs charge CH[2]",5000,0,50.0,5000,0,50.0);
+    TH2D* h_14 = new TH2D("h_14","charge CH[1] vs charge CH[2]",6000,-10,50.0,6000,-10,50.0);
     //--------------------------------------------------------------------------//
 
     for(Int_t eventID = 0; eventID < nEntries; eventID++)
@@ -139,13 +142,13 @@ int main(int argc, char *argv[])
             h_7->Fill(max_ampl[1],charge[1]);
             h_8->Fill(max_ampl[2],charge[2]);
 
-            if(max_ampl[1] < 0.4)
+            if(max_ampl[1] < 2.5)
             {
                 h_9->Fill(charge[1]);
                 h_11->Fill(max_ampl[1],charge[1]);
             }
 
-            if(max_ampl[2] < 1.2)
+            if(max_ampl[2] < 2.5)
             {
                 h_10->Fill(charge[2]);
                 h_12->Fill(max_ampl[2],charge[2]);
