@@ -29,11 +29,13 @@ OUTLIB	      = ./obj/
 
 #----------------------------------------------------#
 
-all: convert_ps convert_wf convert_pr convert_rt getParam runAna_calibration_wf runAna_calibration_pr visWaveform runAna_pr
+all: convert_ps convert_wf convert_wf_h8 convert_pr convert_rt getParam runAna_calibration_wf runAna_calibration_pr visWaveform runAna_pr
 
 convert_ps: convert_ps.cc
 
 convert_wf: convert_wf.cc
+
+convert_wf_h8: convert_wf_h8.cc
 
 convert_pr: convert_pr.cc
 
@@ -59,6 +61,7 @@ clean:
 	rm -f $(OUTLIB)*.o
 	rm -f convert_ps
 	rm -f convert_wf
+	rm -f convert_wf_h8
 	rm -f convert_pr
 	rm -f convert_rt
 	rm -f getParam

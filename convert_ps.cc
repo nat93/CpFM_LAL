@@ -43,6 +43,7 @@ int main(int argc, char *argv[])
     tree->Branch("MotorPosition", &position, position_ss.Data());
     tree->Branch("UnixTime", &untime, untime_ss.Data());
 
+    cout<<"--> input file: "<<argv[1]<<endl;
     ifstream infile(argv[1]);
 
     while (infile>>untime)
@@ -55,4 +56,6 @@ int main(int argc, char *argv[])
 
 	file->Write();
     file->Close();
+
+    cout<<"--> output file: "<<argv[2]<<endl;
 }
