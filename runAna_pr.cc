@@ -10,6 +10,9 @@
 #include "TProfile.h"
 #include "TGraphErrors.h"
 #include "TMath.h"
+#include "TRandom3.h"
+#include "TMultiGraph.h"
+#include "TCanvas.h"
 
 //C, C++
 #include <iostream>
@@ -30,6 +33,15 @@ void function_2();
 void function_3();
 void function_4();
 void function_5();
+void function_6();
+void function_7();
+void function_8();
+
+double fitf(Double_t *x,Double_t *par);
+int getNphotonDetect(double polishingQuality, int *reflectionNum, double *Wavelength, int Nhits);
+void GetPointGraph(TGraphErrors* gr, Double_t x, Double_t ex, Double_t &y, Double_t &ey);
+
+TRandom3* _rnd = new TRandom3();
 
 int main(int argc, char *argv[])
 {
@@ -41,6 +53,9 @@ int main(int argc, char *argv[])
         cout<<"--> 3 >> function_3() -- number of particles along the linear scan"<<endl;
         cout<<"--> 4 >> function_4() -- H8 linear scan"<<endl;
         cout<<"--> 5 >> function_5() -- angular scan"<<endl;
+        cout<<"--> 6 >> function_6() - to plot ratio for 100% of polishing"<<endl;
+        cout<<"--> 7 >> function_7() - to plot ratio for dif% of polishing"<<endl;
+        cout<<"--> 8 >> function_8() - to find the exp sim match"<<endl;
         cout<<endl;
         return -1;
     }
@@ -61,6 +76,15 @@ int main(int argc, char *argv[])
       break;
     case 5:
       function_5();
+      break;
+    case 6:
+      function_6();
+      break;
+    case 7:
+      function_7();
+      break;
+    case 8:
+      function_8();
       break;
     default:
       cout<<"--> Nothing to do =)"<<endl;
@@ -848,10 +872,20 @@ void function_4()
 {
     //=======================================//
     // 2017_10_20
-//    TString input_file_name     = "/media/andrii/F492773C92770302/CpfmData/ROOT_FILES/output2_wf_2017_10_20.root";
-//    TString input_file_name     = "/media/andrii/F492773C92770302/CpfmData/ROOT_FILES/output2_wf_2017_10_20_v2.root";
-    TString input_file_name     = "/media/andrii/F492773C92770302/CpfmData/ROOT_FILES/output2_wf_2017_10_20_2.root";
-
+    //=======================================//    
+//    TString input_file_name     = "/media/andrii/F492773C92770302/CpfmData/ROOT_FILES/output2_wf_2017_10_20.root";    // pyramid2     149 --> -15, HV 1050
+//    Double_t pos_ini            = -15.0;
+//    Double_t pos_fin            = 140.0;
+    //=======================================//
+    TString input_file_name     = "/media/andrii/F492773C92770302/CpfmData/ROOT_FILES/output2_wf_2017_10_20_v2.root";   // pyramid2 v2  -15 --> 140, HV 1050
+    Double_t pos_ini            =   0.0;
+    Double_t pos_fin            = 69+15;
+    //=======================================//
+//    TString input_file_name     = "/media/andrii/F492773C92770302/CpfmData/ROOT_FILES/output2_wf_2017_10_20_2.root";  // pyramid1     -5  --> 140, HV ?900
+//    Double_t pos_ini            =  -5.0;
+//    Double_t pos_fin            = 140.0;
+    //=======================================//
+    //=======================================//
     TString output_file_name    = "./output/output_function_4.root";
 
     // Common
@@ -899,53 +933,57 @@ void function_4()
     //--------------------------------------------------------------------------//
     //-------------------------------- HISTOS ----------------------------------//
     //--------------------------------------------------------------------------//
-    TH1D* h_1 = new TH1D("h_1","max_ampl CH[0]",3000,-0.5,2.5);
-    TH1D* h_2 = new TH1D("h_2","max_ampl CH[1]",3000,-0.5,2.5);
-    TH1D* h_3 = new TH1D("h_3","max_ampl CH[2]",3000,-0.5,2.5);
 
     fChain1->GetEntry(0);
-    Int_t time_ini  = untime/1000.0;
-    Int_t tdc_ini   = (tdc*16*Constants::dTime)/1000000000.0;
-    Int_t evnt_ini  = eventid;
+    Int_t time_ini      = untime/1000.0;
+    Int_t tdc_ini       = (tdc*16*Constants::dTime)/1000000000.0;
+    Int_t evnt_ini      = eventid;
+
     printf("--> time_ini = %20.d\n",time_ini);
     printf("--> tdc_ini = %20.d\n",tdc_ini);
+    printf("--> pos_ini = %20.f\n",pos_ini);
+
     fChain1->GetEntry(nEntries-1);
-    Int_t time_fin = untime/1000.0;
-    Int_t tdc_fin = (tdc*16*Constants::dTime)/1000000000.0;
-    Int_t evnt_fin  = eventid;
+    Int_t time_fin      = untime/1000.0;
+    Int_t tdc_fin       = (tdc*16*Constants::dTime)/1000000000.0;
+    Int_t evnt_fin      = eventid;
+
     printf("--> time_fin = %20.d\n",time_fin);
     printf("--> tdc_fin = %20.d\n",tdc_fin);
-
-    TH2D* h_4 = new TH2D("h_4","max_ampl vs untime CH[0]",(time_fin-time_ini),time_ini,time_fin,3000,-0.5,2.5);
-    TH2D* h_5 = new TH2D("h_5","max_ampl vs untime CH[1]",(time_fin-time_ini),time_ini,time_fin,3000,-0.5,2.5);
-    TH2D* h_6 = new TH2D("h_6","max_ampl vs untime CH[2]",(time_fin-time_ini),time_ini,time_fin,3000,-0.5,2.5);
-
-    TH2D* h_7 = new TH2D("h_7","max_ampl vs untime CH[2]",(time_fin-time_ini),time_ini,time_fin,3000,-0.5,2.5);
-    TProfile* h_8 = new TProfile("h_8","profile max_ampl vs untime CH[2]",(time_fin-time_ini),time_ini,time_fin,-0.5,2.5);
-
-    TH1D* h_9 = new TH1D("h_9","charge CH[0]",1000,0,10);
-    TH1D* h_10 = new TH1D("h_10","charge CH[1]",1000,0,10);
-    TH1D* h_11 = new TH1D("h_11","charge CH[2]",1000,0,10);
-    TH2D* h_12 = new TH2D("h_12","charge vs untime CH[2]",(time_fin-time_ini),time_ini,time_fin,1000,0,10);
-    TProfile* h_13 = new TProfile("h_13","profile charge vs untime CH[2]",(time_fin-time_ini),time_ini,time_fin,0,10);
-
-    TH2D* h_14 = new TH2D("h_14","max_ampl vs tdc CH[0]",(tdc_fin-tdc_ini),tdc_ini,tdc_fin,3000,-0.5,2.5);
-    TH2D* h_15 = new TH2D("h_15","max_ampl vs tdc CH[1]",(tdc_fin-tdc_ini),tdc_ini,tdc_fin,3000,-0.5,2.5);
-    TH2D* h_16 = new TH2D("h_16","max_ampl vs tdc CH[2]",(tdc_fin-tdc_ini),tdc_ini,tdc_fin,3000,-0.5,2.5);
-    TH2D* h_17 = new TH2D("h_17","max_ampl vs tdc CH[2]",(tdc_fin-tdc_ini),tdc_ini,tdc_fin,3000,-0.5,2.5);
-    TProfile* h_18 = new TProfile("h_18","profile max_ampl vs tdc CH[2]",(tdc_fin-tdc_ini),tdc_ini,tdc_fin,-0.5,2.5);
-    TH2D* h_19 = new TH2D("h_19","charge vs tdc CH[2]",(tdc_fin-tdc_ini),tdc_ini,tdc_fin,1000,0,10);
-    TProfile* h_20 = new TProfile("h_20","profile charge vs tdc CH[2]",(tdc_fin-tdc_ini),tdc_ini,tdc_fin,-0.5,2.5);
-
-    TH2D* h_24 = new TH2D("h_24","max_ampl vs eventid CH[0]",(evnt_fin-evnt_ini+1)/10,evnt_ini,evnt_fin,3000,-0.5,2.5);
-    TH2D* h_25 = new TH2D("h_25","max_ampl vs eventid CH[1]",(evnt_fin-evnt_ini+1)/10,evnt_ini,evnt_fin,3000,-0.5,2.5);
-    TH2D* h_26 = new TH2D("h_26","max_ampl vs eventid CH[2]",(evnt_fin-evnt_ini+1)/10,evnt_ini,evnt_fin,3000,-0.5,2.5);
-    TH2D* h_27 = new TH2D("h_27","max_ampl vs eventid CH[2]",(evnt_fin-evnt_ini+1)/10,evnt_ini,evnt_fin,3000,-0.5,2.5);
-    TProfile* h_28 = new TProfile("h_28","profile max_ampl vs eventid CH[2]",(evnt_fin-evnt_ini+1)/10,evnt_ini,evnt_fin,-0.5,2.5);
-    TH2D* h_29 = new TH2D("h_29","charge vs eventid CH[2]",(evnt_fin-evnt_ini+1)/10,evnt_ini,evnt_fin,1000,0,10);
-    TProfile* h_30 = new TProfile("h_30","profile charge vs eventid CH[2]",(evnt_fin-evnt_ini+1)/10,evnt_ini,evnt_fin,0,10);
+    printf("--> pos_fin = %20.f\n",pos_fin);
 
     TH2D* h_31 = new TH2D("h_31","max_ampl CH[0] vs max_ampl CH[1]",3000,-0.5,2.5,3000,-0.5,2.5);
+
+    TH1D* h_1   = new TH1D("h_1","max_ampl CH[0] (T1+T2)",3000,-0.5,2.5);
+    TH1D* h_2   = new TH1D("h_2","max_ampl CH[1] (T1+T2)",3000,-0.5,2.5);
+    TH1D* h_3   = new TH1D("h_3","max_ampl CH[2] (T1+T2)",3000,-0.5,2.5);
+    TH2D* h_4   = new TH2D("h_4","max_ampl vs untime CH[0] (T1+T2)",(time_fin-time_ini),time_ini,time_fin,3000,-0.5,2.5);
+    TH2D* h_5   = new TH2D("h_5","max_ampl vs untime CH[1] (T1+T2)",(time_fin-time_ini),time_ini,time_fin,3000,-0.5,2.5);
+    TH2D* h_6   = new TH2D("h_6","max_ampl vs untime CH[2] (T1+T2)",(time_fin-time_ini),time_ini,time_fin,3000,-0.5,2.5);
+    TH2D* h_14  = new TH2D("h_14","max_ampl vs tdc CH[0] (T1+T2)",(tdc_fin-tdc_ini),tdc_ini,tdc_fin,3000,-0.5,2.5);
+    TH2D* h_15  = new TH2D("h_15","max_ampl vs tdc CH[1] (T1+T2)",(tdc_fin-tdc_ini),tdc_ini,tdc_fin,3000,-0.5,2.5);
+    TH2D* h_24  = new TH2D("h_24","max_ampl vs eventid CH[0] (T1+T2)",(evnt_fin-evnt_ini+1)/10,evnt_ini,evnt_fin,3000,-0.5,2.5);
+    TH2D* h_25  = new TH2D("h_25","max_ampl vs eventid CH[1] (T1+T2)",(evnt_fin-evnt_ini+1)/10,evnt_ini,evnt_fin,3000,-0.5,2.5);
+    TH1D* h_9   = new TH1D("h_9","charge CH[0] (T1+T2)",1000,0,10);
+    TH1D* h_10  = new TH1D("h_10","charge CH[1] (T1+T2)",1000,0,10);
+    TH1D* h_11  = new TH1D("h_11","charge CH[2] (T1+T2)",1000,0,10);
+    TH2D* h_16  = new TH2D("h_16","max_ampl vs tdc CH[2] (T1+T2)",(tdc_fin-tdc_ini),tdc_ini,tdc_fin,3000,-0.5,2.5);
+    TH2D* h_26  = new TH2D("h_26","max_ampl vs eventid CH[2] (T1+T2)",(evnt_fin-evnt_ini+1)/10,evnt_ini,evnt_fin,3000,-0.5,2.5);
+
+    TH2D* h_7       = new TH2D("h_7","max_ampl vs untime CH[2] (T1+T2+CpFM)",(time_fin-time_ini),time_ini,time_fin,3000,-0.5,2.5);
+    TH2D* h_12      = new TH2D("h_12","charge vs untime CH[2] (T1+T2+CpFM)",(time_fin-time_ini),time_ini,time_fin,1000,0,10);
+    TH2D* h_17      = new TH2D("h_17","max_ampl vs tdc CH[2] (T1+T2+CpFM)",(tdc_fin-tdc_ini),tdc_ini,tdc_fin,3000,-0.5,2.5);
+    TH2D* h_19      = new TH2D("h_19","charge vs tdc CH[2] (T1+T2+CpFM)",(tdc_fin-tdc_ini),tdc_ini,tdc_fin,1000,0,10);
+    TH2D* h_27      = new TH2D("h_27","max_ampl vs eventid CH[2] (T1+T2+CpFM)",(evnt_fin-evnt_ini+1)/10,evnt_ini,evnt_fin,3000,-0.5,2.5);
+    TH2D* h_29      = new TH2D("h_29","charge vs eventid CH[2] (T1+T2+CpFM)",(evnt_fin-evnt_ini+1)/10,evnt_ini,evnt_fin,1000,0,10);
+    TProfile* h_8   = new TProfile("h_8","profile max_ampl vs untime CH[2] (T1+T2+CpFM)",(time_fin-time_ini),time_ini,time_fin,-0.5,2.5);
+    TProfile* h_13  = new TProfile("h_13","profile charge vs untime CH[2] (T1+T2+CpFM)",(time_fin-time_ini),time_ini,time_fin,0,10);
+    TProfile* h_18  = new TProfile("h_18","profile max_ampl vs tdc CH[2] (T1+T2+CpFM)",(tdc_fin-tdc_ini),tdc_ini,tdc_fin,-0.5,2.5);
+    TProfile* h_20  = new TProfile("h_20","profile charge vs tdc CH[2] (T1+T2+CpFM)",(tdc_fin-tdc_ini),tdc_ini,tdc_fin,-0.5,2.5);
+    TProfile* h_28  = new TProfile("h_28","profile max_ampl vs eventid CH[2] (T1+T2+CpFM)",(evnt_fin-evnt_ini+1)/10,evnt_ini,evnt_fin,-0.5,2.5);
+    TProfile* h_30  = new TProfile("h_30","profile charge vs eventid CH[2] (T1+T2+CpFM)",(evnt_fin-evnt_ini+1)/10,evnt_ini,evnt_fin,0,10);
+    TProfile* h_32   = new TProfile("h_32","profile max_ampl vs position CH[2] (T1+T2+CpFM)",80000,-400,400,-0.5,2.5);
+
     //--------------------------------------------------------------------------//
 
     for(Int_t eventID = 0; eventID < nEntries; eventID++)
@@ -964,7 +1002,6 @@ void function_4()
 
         if(max_ampl[0] < 0.10 || max_ampl[0] > 0.20) continue;
         if(max_ampl[1] < 0.02 || max_ampl[1] > 0.12) continue;
-        if(max_ampl[2] < 0.01 || max_ampl[2] > 1.20) continue;
 
         h_1->Fill(max_ampl[0]);
         h_2->Fill(max_ampl[1]);
@@ -986,6 +1023,8 @@ void function_4()
         h_25->Fill(eventid,max_ampl[1]);
         h_26->Fill(eventid,max_ampl[2]);
 
+        if(max_ampl[2] > 1.20) continue;
+
         h_7->Fill(untime/1000.0,max_ampl[2]);
         h_8->Fill(untime/1000.0,max_ampl[2]);
         h_12->Fill(untime/1000.0,charge[2]);
@@ -1000,6 +1039,10 @@ void function_4()
         h_28->Fill(eventid,max_ampl[2]);
         h_29->Fill(eventid,charge[2]);
         h_30->Fill(eventid,charge[2]);
+
+        Double_t a = (pos_fin - pos_ini)/(time_fin - time_ini);
+        Double_t b = pos_fin - a*time_fin;
+        h_32->Fill((-1)*(a*untime/1000.0 + b),max_ampl[2]);
     }
     cout<<endl;
 
@@ -1037,6 +1080,7 @@ void function_4()
     h_29->Write();
     h_30->Write();
     h_31->Write();
+    h_32->Write();
 
     file->Write();
     //--------------------------------------------------------------------------//
@@ -1044,7 +1088,7 @@ void function_4()
 
 void function_5()
 {
-    TString output_file_name    = "./output/output_function_2.root";
+    TString output_file_name    = "./output/output_function_5.root";
 
     //=============================================================//
     // Angular Scan Single CH
@@ -1264,3 +1308,527 @@ void function_5()
     file->Write();
     //--------------------------------------------------------------------------//
 }
+
+void function_6()
+{
+    const int nPhotMax  = 20000;
+    const int nFiles    = 80+5;
+    double pos[nFiles];
+
+    int _nEntries,_Nhits,_NTotPhot,_nPhot, _reflectionNum[nPhotMax];
+
+    TH1D* h_nhits[nFiles];
+    TH1D* h_ntotph[nFiles];
+    TString f_name, h_name;
+    double _MomDirZ[nPhotMax],_PosX[nPhotMax];
+
+    TGraphErrors* gr_nhits = new TGraphErrors();
+    gr_nhits->SetName("gr_nhits");
+    TGraphErrors* gr_ntotph = new TGraphErrors();
+    gr_ntotph->SetName("gr_ntotph");
+    TGraphErrors* gr_nratio = new TGraphErrors();
+    gr_nratio->SetName("gr_nratio");
+
+    TH2D* h_1 = new TH2D("h_1","MomDirZ vs primPosZ",400,0,400,1800,0,180);
+    TH2D* h_2 = new TH2D("h_2","MomDirZ vs PosX",3000,-15,15,1800,0,180);
+    TH2D* h_3 = new TH2D("h_3","PosX vs primPosZ",400,0,400,3000,-15,15);
+    TH2D* h_4 = new TH2D("h_4","reflectionNum vs primPosZ",400,0,400,1000,0,1000);
+    TH2D* h_5 = new TH2D("h_5","reflectionNum vs PosX",3000,-15,15,1000,0,1000);
+    TH2D* h_6 = new TH2D("h_6","reflectionNum vs MomDirZ",1800,0,180,1000,0,1000);
+
+    for(int i = 0; i < nFiles; i++)
+    {
+        if(i <= 4)
+        {
+            pos[i] = i*1;
+        }
+        else
+        {
+            pos[i] = (i - 4)*5;
+        }
+
+        f_name = "/home/andrii/GEANT4.9.5/workdir/CpFM_Simulation_SPS/buildPos2/out_";
+        f_name += (int)pos[i];
+        f_name += ".root";
+
+        cout<<"--> FileName: "<<f_name<<endl;
+
+        TChain* _tree = new TChain("T");
+    _tree->Add(f_name.Data());
+        _tree->SetBranchAddress("nPhot",            &_nPhot);
+        _tree->SetBranchAddress("Nhits",            &_Nhits);
+        _tree->SetBranchAddress("NTotPhot",         &_NTotPhot);
+        _tree->SetBranchAddress("MomDirZ",          _MomDirZ);
+        _tree->SetBranchAddress("PosX",             _PosX);
+        _tree->SetBranchAddress("reflectionNum",    _reflectionNum);
+
+        _nEntries = _tree->GetEntries();
+        cout<<"--> nEntries = "<<_nEntries<<endl;
+
+        h_name = "h_nhits_";
+        h_name += (int)pos[i];
+        h_name += "mm";
+        h_nhits[i] = new TH1D(h_name.Data(),h_name.Data(),100000,0,100000);
+
+        h_name = "h_ntotph_";
+        h_name += (int)pos[i];
+        h_name += "mm";
+        h_ntotph[i] = new TH1D(h_name.Data(),h_name.Data(),100000,0,100000);
+
+        for(int iEntry = 0; iEntry < _nEntries; iEntry++)
+        {
+            _tree->GetEntry(iEntry);
+
+            h_nhits[i]->Fill(_Nhits);
+            h_ntotph[i]->Fill(_NTotPhot);
+
+            for(int iPhot = 0; iPhot < _nPhot; iPhot++)
+            {
+                h_1->Fill(pos[i],_MomDirZ[iPhot]);
+                h_2->Fill(_PosX[iPhot],_MomDirZ[iPhot]);
+                h_3->Fill(pos[i],_PosX[iPhot]);
+                h_4->Fill(pos[i],_reflectionNum[iPhot]);
+                h_5->Fill(_PosX[i],_reflectionNum[iPhot]);
+                h_6->Fill(_MomDirZ[i],_reflectionNum[iPhot]);
+            }
+        }
+
+        _tree->Delete();
+
+        gr_nhits->SetPoint(gr_nhits->GetN(),pos[i],h_nhits[i]->GetMean());
+        gr_nhits->SetPointError(gr_nhits->GetN()-1,0.0,h_nhits[i]->GetMeanError());
+
+        gr_ntotph->SetPoint(gr_ntotph->GetN(),pos[i],h_ntotph[i]->GetMean());
+        gr_ntotph->SetPointError(gr_ntotph->GetN()-1,0.0,h_ntotph[i]->GetMeanError());
+
+        gr_nratio->SetPoint(gr_nratio->GetN(),pos[i],h_nhits[i]->GetMean()/h_ntotph[i]->GetMean());
+        gr_nratio->SetPointError(gr_nratio->GetN()-1,0.0,TMath::Sqrt(TMath::Power(h_nhits[i]->GetMeanError()/h_ntotph[i]->GetMean(),2) +
+                                                                     TMath::Power(h_nhits[i]->GetMean()*h_ntotph[i]->GetMeanError()/(h_ntotph[i]->GetMean()*h_ntotph[i]->GetMean()),2)));
+    }
+    cout<<endl<<endl;
+
+    TFile* file_output = new TFile("./output/output_function_6.root","RECREATE");
+
+    for(int i = 0; i < nFiles; i++)
+    {
+        h_nhits[i]->Write();
+        h_ntotph[i]->Write();
+    }
+    gr_nhits->Write();
+    gr_ntotph->Write();
+    gr_nratio->Write();
+
+    h_1->Write();
+    h_2->Write();
+    h_3->Write();
+    h_4->Write();
+    h_5->Write();
+    h_6->Write();
+
+    cout<<"--> Output filename: "<<file_output->GetName()<<endl;
+    file_output->Close();
+}
+
+void function_7()
+{
+    const int nPolish   = 21;
+    const int nPhotMax  = 20000;
+    const int nFiles    = 79+5;
+    double polish[nPolish];
+    double pos[nFiles];
+
+    int _nEntries,_Nhits,_NTotPhot,_nPhot, _reflectionNum[nPhotMax];
+    double _Wavelength[nPhotMax];
+
+    TH1D* h_nhits[nFiles][nPolish];
+    TH1D* h_ntotph[nFiles][nPolish];
+    TString f_name, h_name;
+    double _MomDirZ[nPhotMax],_PosX[nPhotMax];
+
+    TGraphErrors* gr_nhits[nPolish];
+    TGraphErrors* gr_ntotph[nPolish];
+    TGraphErrors* gr_nratio[nPolish];
+
+    TString grName;
+    for(int polishID = 0; polishID < nPolish; polishID++)
+    {
+        gr_nhits[polishID] = new TGraphErrors();
+        grName = "gr_nhits_";
+        grName += polishID;
+        gr_nhits[polishID]->SetName(grName.Data());
+
+        gr_ntotph[polishID] = new TGraphErrors();
+        grName = "gr_ntotph_";
+        grName += polishID;
+        gr_ntotph[polishID]->SetName(grName.Data());
+
+        gr_nratio[polishID] = new TGraphErrors();
+        grName = "gr_nratio_";
+        grName += polishID;
+        gr_nratio[polishID]->SetName(grName.Data());
+
+        polish[polishID] = 0.900 + 0.005*polishID;
+    }
+
+    for(int fileID = 0; fileID < nFiles; fileID++)
+    {
+        _rnd->SetSeed(time(NULL));
+
+        if(fileID <= 4)
+        {
+            pos[fileID] = fileID*1;
+        }
+        else
+        {
+            pos[fileID] = (fileID - 4)*5;
+        }
+
+        f_name = "/home/andrii/GEANT4.9.5/workdir/CpFM_Simulation_SPS/buildPos2/out_";
+        f_name += (int)pos[fileID];
+        f_name += ".root";
+
+        cout<<endl<<"--> FileName: "<<f_name<<endl;
+
+    TChain* _tree = new TChain("T");
+    _tree->Add(f_name.Data());
+        _tree->SetBranchAddress("nPhot",            &_nPhot);
+        _tree->SetBranchAddress("Nhits",            &_Nhits);
+        _tree->SetBranchAddress("NTotPhot",         &_NTotPhot);
+        _tree->SetBranchAddress("MomDirZ",          _MomDirZ);
+        _tree->SetBranchAddress("PosX",             _PosX);
+        _tree->SetBranchAddress("reflectionNum",    _reflectionNum);
+        _tree->SetBranchAddress("Wavelength",       _Wavelength);
+
+        _nEntries = _tree->GetEntries();
+        cout<<"--> nEntries = "<<_nEntries<<endl;
+
+        for(int polishID = 0; polishID < nPolish; polishID++)
+        {
+            printf("\r----->> Polishing: %1.3f",polish[polishID]);
+            fflush(stdout);
+
+            h_name = "h_nhits_";
+            h_name += (int)pos[fileID];
+            h_name += "mm_";
+            h_name += (int)(polish[polishID]*1000);
+            h_nhits[fileID][polishID] = new TH1D(h_name.Data(),h_name.Data(),100000,0,100000);
+
+            h_name = "h_ntotph_";
+            h_name += (int)pos[fileID];
+            h_name += "mm_";
+            h_name += (int)(polish[polishID]*1000);
+            h_ntotph[fileID][polishID] = new TH1D(h_name.Data(),h_name.Data(),100000,0,100000);
+
+            for(int iEntry = 0; iEntry < _nEntries; iEntry++)
+            {
+                _tree->GetEntry(iEntry);
+
+                h_nhits[fileID][polishID]->Fill(getNphotonDetect(polish[polishID],_reflectionNum,_Wavelength,_Nhits));
+                h_ntotph[fileID][polishID]->Fill(_NTotPhot);
+            }
+
+            gr_nhits[polishID]->SetPoint(gr_nhits[polishID]->GetN(),pos[fileID],h_nhits[fileID][polishID]->GetMean());
+            gr_nhits[polishID]->SetPointError(gr_nhits[polishID]->GetN()-1,0.0,h_nhits[fileID][polishID]->GetMeanError());
+
+            gr_ntotph[polishID]->SetPoint(gr_ntotph[polishID]->GetN(),pos[fileID],h_ntotph[fileID][polishID]->GetMean());
+            gr_ntotph[polishID]->SetPointError(gr_ntotph[polishID]->GetN()-1,0.0,h_ntotph[fileID][polishID]->GetMeanError());
+
+            gr_nratio[polishID]->SetPoint(gr_nratio[polishID]->GetN(),pos[fileID],h_nhits[fileID][polishID]->GetMean()/h_ntotph[fileID][polishID]->GetMean());
+            gr_nratio[polishID]->SetPointError(gr_nratio[polishID]->GetN()-1,0.0,TMath::Sqrt(TMath::Power(h_nhits[fileID][polishID]->GetMeanError()/h_ntotph[fileID][polishID]->GetMean(),2) +
+                                                                         TMath::Power(h_nhits[fileID][polishID]->GetMean()*h_ntotph[fileID][polishID]->GetMeanError()/(h_ntotph[fileID][polishID]->GetMean()*h_ntotph[fileID][polishID]->GetMean()),2)));
+
+        }
+
+        _tree->Delete();
+    }
+
+    TFile* file_output = new TFile("./output/output_function_7.root","RECREATE");
+
+    for(int i = 0; i < nFiles; i++)
+    {
+        for(int j = 0; j < nPolish; j++)
+        {
+            h_nhits[i][j]->Write();
+            h_ntotph[i][j]->Write();
+        }
+    }
+
+    for(int j = 0; j < nPolish; j++)
+    {
+        gr_nhits[j]->Write();
+        gr_ntotph[j]->Write();
+        gr_nratio[j]->Write();
+    }
+
+    cout<<"--> Output filename: "<<file_output->GetName()<<endl;
+    file_output->Close();
+
+}
+
+void function_8()
+{
+    const int nPolish   = 21;
+
+    TFile* _file1 = TFile::Open("./output/output_function_7.root");
+    TFile* _file2 = TFile::Open("./output/output_function_4.root");
+    cout<<endl;
+
+    if(_file1->IsOpen())
+        cout<<"--> The input file ''"<<_file1->GetName()<<"'' has been successfully opened."<<endl;
+    else
+        cout<<"--> Cannot open the inout file ''"<<_file1->GetName()<<"''"<<endl;
+    cout<<endl;
+
+    if(_file2->IsOpen())
+        cout<<"--> The input file ''"<<_file2->GetName()<<"'' has been successfully opened."<<endl;
+    else
+        cout<<"--> Cannot open the inout file ''"<<_file2->GetName()<<"''"<<endl;
+    cout<<endl;
+
+    TProfile* prof_data = (TProfile*)_file2->Get("h_32");
+    cout<<"--> prof_data BIN: "<<prof_data->GetBinWidth(1)<<endl;
+    prof_data->Rebin(100);
+    cout<<"--> prof_data BIN: "<<prof_data->GetBinWidth(1)<<endl;
+
+    //=================================================//
+    // NORMALIZATION RANGE
+    //=================================================//
+    Double_t pointAfterZeroIni = 3;
+    Double_t pointAfterZeroFin = 9;
+    //=================================================//
+
+    TCanvas* c_profdata = new TCanvas("c_profdata","c_profdata");
+    c_profdata->cd();
+    prof_data->Draw();
+
+    TF1* fit_1 = new TF1("fit_1",fitf,-58,-48,4);
+    fit_1->SetParameter(0,0.30);
+    fit_1->SetParameter(1,-53.5);
+    fit_1->SetParameter(2,0.07);
+    fit_1->SetParameter(3,0.40);
+    fit_1->SetLineColor(kRed);
+    prof_data->Fit(fit_1,"R+");
+    cout<<"--> Chi2/ndf ERF = "<<fit_1->GetChisquare()<<"/"<<fit_1->GetNDF()<<endl;
+    Double_t par_1[4], errpar_1[4];
+    fit_1->GetParameters(&par_1[0]);
+    errpar_1[0] = fit_1->GetParError(0);
+    errpar_1[1] = fit_1->GetParError(1);
+    errpar_1[2] = fit_1->GetParError(2);
+    errpar_1[3] = fit_1->GetParError(3);
+
+    //=================================================//
+    // NORMALIZATION I
+    //=================================================//
+    TF1* fit_2 = new TF1("fit_2","pol0",par_1[1]+pointAfterZeroIni,par_1[1]+pointAfterZeroFin);
+    fit_2->SetLineColor(kGreen);
+    prof_data->Fit(fit_2,"R+");
+    cout<<"--> Chi2/ndf POL0 = "<<fit_2->GetChisquare()<<"/"<<fit_2->GetNDF()<<endl;
+    Double_t par_2[1], errpar_2[1];
+    fit_2->GetParameters(&par_2[0]);
+    errpar_2[0] = fit_2->GetParError(0);
+    //=================================================//
+    // NORMALIZATION II
+    //=================================================//
+//    par_2[0] = prof_data->GetBinContent(prof_data->FindFirstBinAbove(prof_data->GetMaximum()*0.9,1)     + 3);
+//    errpar_2[0] = prof_data->GetBinError(prof_data->FindFirstBinAbove(prof_data->GetMaximum()*0.9,1)    + 3);
+    //=================================================//
+
+    TGraphErrors* gr_data = new TGraphErrors();
+    gr_data->SetName("gr_data");
+    gr_data->SetMarkerStyle(21);
+    gr_data->SetMarkerSize(0.5);
+
+    for(Int_t i = 1; i <= prof_data->GetNbinsX(); i++)
+    {
+        gr_data->SetPoint(gr_data->GetN(),prof_data->GetBinCenter(i)-par_1[1],prof_data->GetBinContent(i)/par_2[0]);
+        gr_data->SetPointError(gr_data->GetN()-1,TMath::Sqrt(
+                                   TMath::Power(prof_data->GetBinWidth(i)/TMath::Sqrt(12.0),2) +
+                                   TMath::Power(errpar_1[1],2)
+                                   ),TMath::Sqrt(
+                    TMath::Power(prof_data->GetBinError(i)/par_2[0],2) +
+                    TMath::Power(prof_data->GetBinContent(i)*errpar_2[0]/(par_2[0]*par_2[0]),2)
+                    ));
+    }
+
+    TCanvas* c_data = new TCanvas("c_data","c_data");
+    c_data->cd();
+    gr_data->Draw("AP");
+
+    TF1* fit_3 = new TF1("fit_3","pol0",pointAfterZeroIni,pointAfterZeroFin);
+    Double_t par_3[1], errpar_3[1];
+    TGraphErrors* gr_nhits[nPolish];
+    TMultiGraph* mg_nhits   = new TMultiGraph();
+
+    Double_t nhits_x, nhits_y;
+    TString grName;
+
+    for(int polishID = 0; polishID < nPolish; polishID++)
+    {
+        grName = "gr_nhits_";
+        grName += polishID;
+        gr_nhits[polishID] = (TGraphErrors*)_file1->Get(grName.Data());
+
+        //=================================================//
+        // NORMALIZATION I
+        //=================================================//
+        gr_nhits[polishID]->Fit(fit_3,"R0Q");
+        fit_3->GetParameters(&par_3[0]);
+        errpar_3[0] = fit_3->GetParError(0);
+        //=================================================//
+        // NORMALIZATION II
+        //=================================================//
+//        gr_nhits[polishID]->GetPoint(4,nhits_x,par_3[0]);
+//        errpar_3[0] = gr_nhits[polishID]->GetErrorY(4);
+        //=================================================//
+
+        for(Int_t i = 0; i < gr_nhits[polishID]->GetN(); i++)
+        {
+            gr_nhits[polishID]->GetPoint(i,nhits_x,nhits_y);
+            gr_nhits[polishID]->SetPoint(i,nhits_x,nhits_y/par_3[0]);
+
+            gr_nhits[polishID]->SetPointError(i,gr_nhits[polishID]->GetErrorX(i),
+                                              TMath::Sqrt(TMath::Power(gr_nhits[polishID]->GetErrorY(i)/par_3[0],2) +
+                                              TMath::Power(nhits_y*errpar_3[0]/(par_3[0]*par_3[0]),2)));
+        }
+
+        grName.Form("P = %.3f",0.900 + 0.005*polishID);
+        gr_nhits[polishID]->SetName(grName.Data());
+        gr_nhits[polishID]->SetFillColor(0);
+        gr_nhits[polishID]->SetLineColor(polishID + 1);
+
+        if(900 + 5*polishID == 965)
+        {
+            mg_nhits->Add(gr_nhits[polishID]);
+        }
+    }
+
+    TH2D* h_chi2_1 = new TH2D("h_chi2_1","#Chi^{2}",50,0,50,nPolish,0.900,1.005);
+    TH1D* h_chi2_2 = new TH1D("h_chi2_2","#Sigma #Chi^{2}",nPolish,0.900,1.005);
+    Double_t xx,exx,y1,y2,ey1,ey2,polish_temp, chi2, chi2_tot[nPolish] = {};
+
+    for(int j = 0; j < gr_data->GetN(); j++)
+    {
+        gr_data->GetPoint(j,xx,y1);
+        exx = gr_data->GetErrorX(j);
+        ey1 = gr_data->GetErrorY(j);
+
+        if(xx < 0 || xx > 50) continue;
+
+        for(int polishID = 0; polishID < nPolish; polishID++)
+        {
+            polish_temp = 0.900 + 0.005*polishID;
+
+            GetPointGraph(gr_nhits[polishID],xx,exx,y2,ey2);
+            chi2 = TMath::Power(y2 - y1,2)/(ey2*ey2 + ey1*ey1);
+            chi2_tot[polishID] += chi2;
+
+            h_chi2_1->Fill(xx,polish_temp,chi2);
+        }
+    }
+
+    for(int polishID = 0; polishID < nPolish; polishID++)
+    {
+        polish_temp = 0.900 + 0.005*polishID;
+        h_chi2_2->Fill(polish_temp,chi2_tot[polishID]);
+    }
+
+    TCanvas* c_nhits = new TCanvas("c_nhits","c_nhits");
+    c_nhits->cd();
+    mg_nhits->Draw("APL");
+    c_nhits->BuildLegend();
+
+    TCanvas* c_nhits_data = new TCanvas("c_nhits_data","c_nhits_data");
+    c_nhits_data->cd();
+    mg_nhits->Draw("APL");
+    gr_data->Draw("Psame");
+    c_nhits_data->BuildLegend();
+
+    TFile* file_output = new TFile("./output/output_function_8.root","RECREATE");
+
+    c_profdata->Write();
+    c_data->Write();
+    c_nhits->Write();
+    c_nhits_data->Write();
+    h_chi2_1->Write();
+    h_chi2_2->Write();
+
+    cout<<"--> Output filename: "<<file_output->GetName()<<endl;
+    file_output->Close();
+}
+
+int getNphotonDetect(double polishingQuality, int *reflectionNum, double *Wavelength, int Nhits)
+{
+    // Bialkali photocathode (Normalized)
+    double opticalPhotonWavelength[33] = {299.746185,309.898468,321.065979,330.203033,339.340088,349.492371,358.629456,369.796967,378.934021,
+                                           390.101532,400.253815,407.360413,416.497467,428.680206,436.802032,450.000000,458.121826,469.289337,
+                                            478.426392,489.593903,498.730957,508.883240,521.065979,529.187805,540.355347,550.507629,560.659912,
+                                            569.796936,578.934021,590.101501,599.238586,609.390869,1000.0};
+
+    double opticalPhotonQuantumEff[33] = {0.352165,0.442561,0.502825,0.548023,0.653481,0.713745,0.789076,0.84934,0.92467,1.0,1.0,
+                                                1.0,1.0,1.0,1.0,0.984934,0.92467,0.804142,0.698679,0.623353,0.548023,0.442561,0.337099,0.291901,
+                                                0.216571,0.216571,0.186439,0.156311,0.126179,0.0809804,0.0508484,0.0357823,0};
+
+    int _nPhotons = 0;
+
+    for(int j = 0; j < Nhits; j++)
+    {
+        int i;
+        for(i = 0; i < 33;i++)
+        {
+            if(Wavelength[j] < opticalPhotonWavelength[i]) {break;}
+        }
+
+        double probability1 = opticalPhotonQuantumEff[i-1] + (opticalPhotonQuantumEff[i] - opticalPhotonQuantumEff[i-1])*
+                (Wavelength[j] - opticalPhotonWavelength[i-1])/(opticalPhotonWavelength[i] - opticalPhotonWavelength[i-1]);
+
+        double probability2 = TMath::Power(polishingQuality,reflectionNum[j]);
+
+        if(_rnd->Uniform(0,1) <= probability1*probability2) {_nPhotons++;}
+    }
+
+    return _nPhotons;
+}
+
+double fitf(Double_t *x,Double_t *par)
+{
+    Double_t arg = 0;
+    if (par[2]!=0) arg = (x[0] - par[1])/(par[2]*TMath::Sqrt(2.0));
+    Double_t fitval = par[0]*TMath::Erf(arg) + par[3];
+    return fitval;
+}
+
+void GetPointGraph(TGraphErrors* gr, Double_t x, Double_t ex, Double_t &y, Double_t &ey)
+{
+    Int_t i = -1;
+    Double_t x_tmp, y_tmp;
+    for(i = 0; i < gr->GetN(); i++)
+    {
+        gr->GetPoint(i,x_tmp,y_tmp);
+        if(x_tmp > x) break;
+    }
+    Double_t x1,y1,x2,y2;
+    Double_t ex1,ey1,ex2,ey2;
+    gr->GetPoint(i-1,x1,y1);
+    ex1 = gr->GetErrorX(i-1);
+    ey1 = gr->GetErrorY(i-1);
+    gr->GetPoint(i,x2,y2);
+    ex2 = gr->GetErrorX(i);
+    ey2 = gr->GetErrorY(i);
+
+    Double_t a = (y2-y1)/(x2-x1);
+    Double_t ea = TMath::Sqrt( TMath::Power(ey2/(x2-x1),2) +
+                               TMath::Power(ey1/(x2-x1),2) +
+                               TMath::Power((y2-y1)*ex2/((x2-x1)*(x2-x1)),2) +
+                               TMath::Power((y2-y1)*ex1/((x2-x1)*(x2-x1)),2) );
+    Double_t b = y2 - a*x2;
+    Double_t eb = TMath::Sqrt( TMath::Power(ey2,2) +
+                               TMath::Power(ea*x2,2) +
+                               TMath::Power(a*ex2,2) );
+
+    y = a*x+b;
+    ey = TMath::Sqrt( TMath::Power(ea*x,2) +
+                      TMath::Power(a*ex,2) +
+                      TMath::Power(eb,2) );
+
+}
+

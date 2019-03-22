@@ -112,8 +112,11 @@ echo "--> Running Data Analysis"
 #./runAna_pr 1
 #./runAna_pr 2
 #./runAna_pr 3
-./runAna_pr 4
+#./runAna_pr 4
 #./runAna_pr 5
+#./runAna_pr 6
+#./runAna_pr 7
+./runAna_pr 8
 
 echo "--> Finished."
 
