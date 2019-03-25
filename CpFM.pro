@@ -10,33 +10,47 @@ LIBS += -L/home/andrii/root/lib -lGui -lCore -lCint -lRIO -lNet -lHist -lGraf -l
 SOURCES += \
     convertor.cc \
     src/Tree.C \
-    runAna_ions.cc \
-    runAna_protons.cc \
     getParam.cc \
     visWaveform.cc \
-    plotHisto.C \
     convert_wf.cc \
     convert_pr.cc \
-    get_position.cc \
     convert_pr.cc \
     convert_wf.cc \
     getParam.cc \
-    get_position.cc \
-    plotHisto.C \
-    runAna_ions.cc \
-    runAna_protons.cc \
-    visWaveform.cc
+    visWaveform.cc \
+    runAna_calibration_wf.cc \
+    runAna_calibration_pr.cc \
+    convert_rt.cc \
+    convert_ps.cc \
+    runAna_pr.cc \
+    convert_wf_h8.cc
 
 HEADERS += \
     include/Constants.hh \
-    runAll.bash \
     src/Tree.h
 
 DISTFILES += \
     filelist.txt \
-    runAll.bash \
     README.md \
-    filelist_pr.txt \
-    filelist_pr_ions.txt \
-    filelist_wf.txt \
-    filelist_wf_ions.txt
+    filelist_pr_2016_10_18.txt \
+    filelist_pr_2016_11_23.txt \
+    filelist_wf_2016_10_18.txt \
+    filelist_wf_2016_11_23.txt \
+    filelist_rt_2016_10_18.txt \
+    filelist_pr_2018_09_17.txt \
+    filelist_wf_2018_09_17.txt \
+    runAll.bash \
+    filelist_wf_2017_12_12.txt \
+    filelist_pr_2017_12_12.txt \
+    filelist_wf_2017_05_30.txt \
+    filelist_pr_2017_05_30.txt \
+    filelist_wf_2017_09_18.txt \
+    filelist_pr_2017_09_18.txt \
+    filelist_wf_2018_11_07.txt \
+    filelist_pr_2018_11_07.txt \
+    filelist_wf_2017_10_20.txt \
+    filelist_wf_2017_10_20_2.txt \
+    filelist_wf_2017_10_20_v2.txt \
+    filelist_wf_2018_06_18.txt \
+    filelist_pr_2018_06_18.txt \
+    filelist_rt_2018_06_18.txt
