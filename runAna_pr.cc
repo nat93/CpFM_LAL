@@ -38,6 +38,7 @@ void function_7();
 void function_8();
 void function_9();
 void function_10();
+void function_11();
 
 Double_t fitf(Double_t *x,Double_t *par);
 Int_t getNphotonDetect(Double_t polishingQuality, Int_t *reflectionNum, Double_t *Wavelength, Int_t Nhits);
@@ -52,7 +53,7 @@ Int_t main(Int_t argc, char *argv[])
     if(argc != 2)
     {
         cout<<endl;
-        cout<<"--> 1 >> function_1() -- parking position"<<endl;
+        cout<<"--> 1 >> function_1() -- fixed position"<<endl;
         cout<<"--> 2 >> function_2() -- linear scan"<<endl;
         cout<<"--> 3 >> function_3() -- number of particles along the linear scan"<<endl;
         cout<<"--> 4 >> function_4() -- H8 linear scan"<<endl;
@@ -62,6 +63,7 @@ Int_t main(Int_t argc, char *argv[])
         cout<<"--> 8 >> function_8() - to find the exp sim match (polish)"<<endl;
         cout<<"--> 9 >> function_9() - to plot ratio for dif% of polishing and width"<<endl;
         cout<<"--> 10 >> function_10() - to find the exp sim match (polish + width)"<<endl;
+        cout<<"--> 11 >> function_11() -- like function_5() but without BLM"<<endl;
         cout<<endl;
         return -1;
     }
@@ -97,6 +99,9 @@ Int_t main(Int_t argc, char *argv[])
       break;
     case 10:
       function_10();
+      break;
+    case 11:
+      function_11();
       break;
     default:
       cout<<"--> Nothing to do =)"<<endl;
@@ -2269,6 +2274,172 @@ void function_10()
 
     cout<<"--> Output filename: "<<file_output->GetName()<<endl;
     file_output->Close();
+}
+
+void function_11()
+{
+    TString output_file_name    = "./output/output_function_11.root";
+
+    //=============================================================//
+    // Angular Scan Single CH
+    // 2018_09_17
+    TString input_file_meas     = "/media/andrii/F492773C92770302/CpfmData/ROOT_FILES/output2_pr_2018_09_17.root";
+    TString input_file_motor    = "crystal2_angularscan_2018_09_17.root";
+    Int_t starting_event        = 0;
+    Long64_t minUnixTime_run    = 1537206118;
+    Long64_t maxUnixTime_run    = 1537206480;
+    Int_t angBins               = 700;
+    Double_t angLimMin          = -6700;
+    Double_t angLimMax          = -6000;
+    //=============================================================//
+
+    // Measurements
+    Double_t untime;
+    Double_t tdc;
+    Double_t max_ampl[Constants::nCh];
+    Double_t min_ampl[Constants::nCh];
+    Double_t mean_value_16p[Constants::nCh];
+    Double_t time_max_ampl[Constants::nCh];
+    Double_t time_min_ampl[Constants::nCh];
+    Double_t time_level[Constants::nCh];
+    Double_t time_cf[Constants::nCh];
+    Double_t rise_time[Constants::nCh];
+    Double_t fall_time[Constants::nCh];
+    Double_t charge[Constants::nCh];
+    Double_t width_at_level[Constants::nCh];
+    Int_t num_peaks[Constants::nCh];
+    Int_t num_peaks_true[Constants::nCh];
+    Int_t eventid;
+
+    TChain *fChain1 = new TChain("Tree");
+    fChain1->Add(input_file_meas);
+
+    fChain1->SetBranchAddress("UnixTime",               &untime);
+    fChain1->SetBranchAddress("TDC",                    &tdc);
+    fChain1->SetBranchAddress("EventID",                &eventid);
+    fChain1->SetBranchAddress("MaxAmp",                 max_ampl);
+    fChain1->SetBranchAddress("MinAmp",                 min_ampl);
+    fChain1->SetBranchAddress("TimeMaxAmp",             time_max_ampl);
+    fChain1->SetBranchAddress("TimeMinAmp",             time_min_ampl);
+    fChain1->SetBranchAddress("TimeLevel",              time_level);
+    fChain1->SetBranchAddress("WidthAtTimeCF",          width_at_level);
+    fChain1->SetBranchAddress("MeanValue16Points",      mean_value_16p);
+    fChain1->SetBranchAddress("TimeCF",                 time_cf);
+    fChain1->SetBranchAddress("RiseTime",               rise_time);
+    fChain1->SetBranchAddress("FallTime",               fall_time);
+    fChain1->SetBranchAddress("Charge",                 charge);
+    fChain1->SetBranchAddress("NumPeaks",               num_peaks);
+    fChain1->SetBranchAddress("NumPeaksTrue",           num_peaks_true);
+
+    // Motor
+    Double_t angle;
+    Double_t untime_motor;
+
+    TChain *fChain3 = new TChain("Tree");
+    fChain3->Add(input_file_motor);
+
+    fChain3->SetBranchAddress("Value",  &angle);
+    fChain3->SetBranchAddress("UnixTime",       &untime_motor);
+
+    cout<<"--> Input file with measurements: "<<input_file_meas<<endl;
+    Double_t nEntries_1 = fChain1->GetEntries();
+    cout<<"--> nEntries: "<<nEntries_1<<endl;
+
+    cout<<"--> Input file with motor: "<<input_file_motor<<endl;
+    Double_t nEntries_3 = fChain3->GetEntries();
+    cout<<"--> nEntries: "<<nEntries_3<<endl;
+
+    //--------------------------------------------------------------------------//
+    //-------------------------------- HISTOS ----------------------------------//
+    //--------------------------------------------------------------------------//
+
+    TH2D* hh_10 = new TH2D("hh_10","CrystalAngle vs UnixTime",(maxUnixTime_run-minUnixTime_run),minUnixTime_run,maxUnixTime_run,angBins,angLimMin,angLimMax);
+
+    TH2D* hh_11 = new TH2D("hh_11","Amplitude vs Angle CH[0]",angBins,angLimMin,angLimMax,3000,-0.5,2.5);
+    TH2D* hh_12 = new TH2D("hh_12","Amplitude vs Angle CH[1]",angBins,angLimMin,angLimMax,3000,-0.5,2.5);
+    TH2D* hh_13 = new TH2D("hh_13","Amplitude vs Angle CH[2]",angBins,angLimMin,angLimMax,3000,-0.5,2.5);
+
+    TProfile* hprof_1  = new TProfile("hprof_1","Profile of Amplitude vs Angle CH[0]",angBins/10,angLimMin,angLimMax,-1,2);
+    TProfile* hprof_2  = new TProfile("hprof_2","Profile of Amplitude vs Angle CH[1]",angBins/10,angLimMin,angLimMax,-1,2);
+    TProfile* hprof_3  = new TProfile("hprof_3","Profile of Amplitude vs Angle CH[2]",angBins/10,angLimMin,angLimMax,-1,2);
+    TProfile* hprof_4  = new TProfile("hprof_4","Profile of BLM vs Angle",angBins/10,angLimMin,angLimMax,-1,2);
+
+    TGraphErrors* gr_0 = new TGraphErrors();
+    gr_0->SetName("gr_0");
+    gr_0->SetTitle("Angle");
+    Int_t gr_0_iter = 0;
+
+    //--------------------------------------------------------------------------//
+
+    // MOTOR
+    for(Int_t eventID = 0; eventID < nEntries_3; eventID++)
+    {
+        fChain3->GetEntry(eventID);
+
+        if(eventID%1 == 0)
+        {
+            printf("\r--> Working Motor: %3.1f %%",100*(Double_t)eventID/nEntries_3);
+            fflush(stdout);
+        }
+
+        if(untime_motor < minUnixTime_run || untime_motor > maxUnixTime_run) continue;
+        //-------------------------------------------------------------------------------------------------------------------------------------//
+        hh_10->Fill(untime_motor,angle);
+        gr_0->SetPoint(gr_0_iter,untime_motor,angle);
+        gr_0->SetPointError(gr_0_iter,0.001,0.1);
+        gr_0_iter++;
+    }
+    cout<<endl;
+
+    // MEASUREMENTS
+
+    for(Int_t eventID = starting_event; eventID < nEntries_1; eventID++)
+    {
+        fChain1->GetEntry(eventID);
+
+        untime = untime/1000000.0;
+
+        if(eventID%1000 == 0)
+        {
+            printf("\r--> Working Measurements: %3.1f %%",100*(Double_t)eventID/nEntries_1);
+            fflush(stdout);
+        }
+        if(untime < minUnixTime_run || untime > maxUnixTime_run) continue;
+//        cout<<"--> starting_event = "<<eventID<<endl; break;
+        //-------------------------------------------------------------------------------------------------------------------------------------//
+
+        Double_t angle_temp = gr_0->Eval(untime);
+
+        hh_11->Fill(angle_temp,max_ampl[0]);
+        hh_12->Fill(angle_temp,max_ampl[1]);
+        hh_13->Fill(angle_temp,max_ampl[2]);
+
+        hprof_1->Fill(angle_temp,max_ampl[0]);
+        hprof_2->Fill(angle_temp,max_ampl[1]);
+        hprof_3->Fill(angle_temp,max_ampl[2]);
+    }
+    cout<<endl;
+
+    //--------------------------------------------------------------------------//
+    //-------------------------------- WRITE -----------------------------------//
+    //--------------------------------------------------------------------------//
+    cout<<"--> Output file: "<<output_file_name<<endl;
+    TFile* file = new TFile(output_file_name,"recreate");
+
+    hh_10->Write();
+    hh_11->Write();
+    hh_12->Write();
+    hh_13->Write();
+
+    hprof_1->Write();
+    hprof_2->Write();
+    hprof_3->Write();
+    hprof_4->Write();
+
+    gr_0->Write();
+
+    file->Write();
+    //--------------------------------------------------------------------------//
 }
 
 Int_t getNphotonDetect(Double_t polishingQuality, Int_t *reflectionNum, Double_t *Wavelength, Int_t Nhits)
